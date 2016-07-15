@@ -1,5 +1,7 @@
 package org.poormanscastle.products.hit2assext;
 
+import org.apache.commons.lang3.StringUtils;
+import org.apache.log4j.Logger;
 import org.poormanscastle.products.hit2assext.domain.RenderSessionContext;
 import org.poormanscastle.products.hit2assext.domain.RenderSessionContexts;
 
@@ -19,6 +21,8 @@ import java.util.Map;
  */
 public final class RenderSessionManager {
 
+    private final static Logger logger = Logger.getLogger(RenderSessionManager.class);
+
     private final static Map<String, RenderSessionContext> contextMap = new HashMap<>();
 
     /**
@@ -28,6 +32,7 @@ public final class RenderSessionManager {
      * @return
      */
     public static String testConfiguration() {
+        logger.info("Running testConfiguration()");
         return "Hello, World!";
     }
 
@@ -42,6 +47,7 @@ public final class RenderSessionManager {
     public static String createRenderSessionContext() {
         RenderSessionContext context = RenderSessionContexts.createDefaultRenderSessionContext();
         contextMap.put(context.getUuid(), context);
+        logger.info(StringUtils.join("Created new RenderSessionContext with uuid ", context.getUuid()));
         return context.getUuid();
     }
 
@@ -52,7 +58,11 @@ public final class RenderSessionManager {
      * @param uuid
      */
     public static void cleanUpRenderSessionContext(String uuid) {
-        contextMap.remove(uuid);
+        logger.info(StringUtils.join("Cleaning up RenderSessionContext with uuid ", uuid));
+        Object foundObject = contextMap.remove(uuid);
+        if (foundObject == null) {
+            logger.warn(StringUtils.join("No RenderSession for uuid ", uuid, " was found."));
+        }
     }
 
     /**
@@ -64,6 +74,8 @@ public final class RenderSessionManager {
      */
     public static void createList(String renderSessionContextUuid, String listName) {
         List<Object> list = new LinkedList<>();
+        logger.info(StringUtils.join("Creating new list with name ", listName, " in RenderSessionContext with uuid ", renderSessionContextUuid, "."));
+        contextMap.get(renderSessionContextUuid).addListVariable(listName);
     }
 
     /**
@@ -78,6 +90,7 @@ public final class RenderSessionManager {
      */
     public static void addListValue(String renderSessionContextUuid, String listName, Object value) {
         contextMap.get(renderSessionContextUuid).addListValue(listName, value);
+        logger.info(StringUtils.join("Adding value ", value, " to list with name ", listName, " in RenderSessionContext with uuid ", renderSessionContextUuid, "."));
     }
 
     /**
@@ -90,7 +103,9 @@ public final class RenderSessionManager {
      * @return
      */
     public static Object getListValueAt(String renderSessionContextUuid, String listName, int index) {
-        return contextMap.get(renderSessionContextUuid).getListValueAt(listName, index);
+        Object value = contextMap.get(renderSessionContextUuid).getListValueAt(listName, index);
+        logger.info(StringUtils.join("Looking up value ", listName, "[", index, "]=", value));
+        return value;
     }
 
 }
