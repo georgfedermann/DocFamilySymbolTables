@@ -11,7 +11,7 @@ import java.util.UUID;
 
 class RenderSessionContextImpl implements RenderSessionContext {
 
-    private final Map<String, List> listMap = new HashMap<>();
+    private final Map<String, List<Object>> listMap = new HashMap<>();
 
     /**
      * remember when this session item was created. If the clean up does not work for some reason
@@ -57,5 +57,14 @@ class RenderSessionContextImpl implements RenderSessionContext {
     public void addListVariable(String name) {
         listMap.put(name, new LinkedList<>());
     }
-    
+
+    @Override
+    public void addListValue(String listName, Object value) {
+        listMap.get(listName).add(value);
+    }
+
+    @Override
+    public Object getListValueAt(String listName, int index) {
+        return listMap.get(listName).get(index);
+    }
 }

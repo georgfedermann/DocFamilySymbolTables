@@ -27,6 +27,31 @@ public interface RenderSessionContext {
      */
     String getUuid();
 
+    /**
+     * create a new list which can be referenced using the given name.
+     *
+     * @param name
+     */
     void addListVariable(String name);
+
+    /**
+     * appends the given value at the end of the list identified by the given name.
+     * Nota bene: before adding values to a list, the list must have been created
+     * using method addListVariable(String) beforehand.
+     *
+     * @param listName
+     * @param value
+     */
+    void addListValue(String listName, Object value);
+
+    /**
+     * this method can be used to retrieve the value at the specified index from
+     * the list referenced by the given name.
+     *
+     * @param listName
+     * @param index
+     * @return
+     */
+    Object getListValueAt(String listName, int index);
 
 }
