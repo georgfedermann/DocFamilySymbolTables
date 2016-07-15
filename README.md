@@ -20,7 +20,7 @@ extensions on the Document element. For test purposes you can manually add
 the required namespace on the Document Element in DocDesign. The required
 namespace is the full qualified class name of the RenderSessionManager type:
 
-namespace prefix -> namespace
+Enter a namespace prefix and a namespace:  
 hitassext -> org.poormanscastle.products.hit2assext.domain.RenderSessionManager
 
 You can test the successful installation by creating a new *Simple Document* in DocDesign,
