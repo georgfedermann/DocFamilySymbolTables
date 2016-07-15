@@ -1,16 +1,16 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<project xmlns="http://maven.apache.org/POM/4.0.0" 
-	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-  	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
-  <modelVersion>4.0.0</modelVersion>
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <modelVersion>4.0.0</modelVersion>
 
-  <groupId>org.poormanscastle.products</groupId>
-  <artifactId>hit2assext</artifactId>
-  <version>0.0.1-SNAPSHOT</version>
-  <packaging>jar</packaging>
+    <groupId>org.poormanscastle.products</groupId>
+    <artifactId>hit2assext</artifactId>
+    <version>0.0.1-SNAPSHOT</version>
+    <packaging>jar</packaging>
 
-  <name>hit2assext</name>
-  <url>http://maven.apache.org</url>
+    <name>hit2assext</name>
+    <url>http://maven.apache.org</url>
 
     <properties>
         <project.source.version>1.7</project.source.version>
@@ -23,6 +23,11 @@
             <groupId>junit</groupId>
             <artifactId>junit</artifactId>
             <version>4.12</version>
+        </dependency>
+        <dependency>
+            <groupId>joda-time</groupId>
+            <artifactId>joda-time</artifactId>
+            <version>2.9.4</version>
         </dependency>
         <dependency>
             <groupId>org.slf4j</groupId>
@@ -44,7 +49,7 @@
             <artifactId>guava</artifactId>
             <version>18.0</version>
         </dependency>
-  </dependencies>
+    </dependencies>
     <build>
         <finalName>HitAssExtensions</finalName>
         <plugins>
@@ -65,7 +70,8 @@
                 <configuration>
                     <archive>
                         <manifest>
-                            <mainClass>org.poormanscastle.studies.compilers.utils.grammartools.ll1.LL1TableCreator</mainClass>
+                            <mainClass>org.poormanscastle.studies.compilers.utils.grammartools.ll1.LL1TableCreator
+                            </mainClass>
                         </manifest>
                     </archive>
                     <descriptorRefs>
