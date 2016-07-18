@@ -77,7 +77,78 @@ In the new **Dynamic Content** element enter the following XPath: `hit2assext:te
 
 ## Working with hit2assext
 
-This section describes what you can do with the hit2assext module and the syntax of the commands involved.
+This section describes what you can do with the hit2assext module and the syntax of the commands involved. It's a list of all available commands with information what they are meant to do and how they have to be used, including the syntax.
+
+### Create RenderSessionContext
+#### Abstract
+Rendering of documents always happens in the render engine DocBase. Since DocBase is a multithreaded environment, multiple documents can be created concurrently, i.e. more or less at the same time. The DocDesign extension mechanism works with a static context. Thus, the hit2assext symbol tables exist in a static context, and therefore visible to all render threads that exist at a given time. To separate symbol tables for each render thread, render sessions are introduced. For each rendering process, one of those render sessions has to be created, and also has to be destroyed when the rendering is completed. The symbol table exists within the render session and is called RenderSessionContext. Creation and deletion of those render session objects is the responsibility of the DocDesign template designer. When a render session is created, the hit2assext system reports back the unique render session id by which the render session object can be referenced. It's important to keep this id or the render session cannot be referenced, e.g. to create lists, manipulate lists, and to delete the render session altogether when not needed any more. Therefore, the best practice is to create the render session within a DocDesign DocumentVariable element and store the uuid within the respective document variable.  
+####Sample code
+In DocDesign, add a new DocumentVariable element to the very beginning of your PageContent, and in the property editor of this DocumentVariable element, wihtin the XML section, set the name to the value  
+`'renderSessionUuid'`  
+Set the value of the document variable to this value:  
+`hit2assext:createRenderSessionContext()`  
+__Nota bene__:
+* both values are XPath expressions. Do not forget to enter the single quotes around the variable name. 
+* The _function_ hit2assext:createRenderSessionContext() creates a new render session and returns the id of the newly created render session. It also creates a new symbol table within this session, called _render session context_.
+* The variable `renderSessionUuid` will now hold the unique id of the newly created render session. You can use the id to refer to the render session, as shown below.
+
+### Cleanup render session
+####Abstract
+When the render process for the given document (! - not batch process!) has completed (successfully or erroneous), it's mandatory to clean up the render session to avoid a memory leak.
+####Sample code
+In DocDesign, add a new _Dynamic Content_ element at the very end of your _Page Content_.  
+In the property editor of your _Dynamic Content_ element, go to Common->XML and enter the following XPath expression:  
+`hit2assext:cleanUpRenderSessionContext(var:read('renderSessionUuid'))`  
+
+__Nota bene:__
+* After the clean up of the session context, the session context will not be available any more. Any attempt to access the render session or the content of its symbol table after clean up will potentially and probably lead to erroneous behavior, error logs and rendering malfunctions.
+* The syntax `var:read('renderSessionUuid')` uses the standard _DocDesign_ _Document Variable_ mechanism which is available using the namespace `var`. `'renderSessionUuid'` again is the name of the variable we have chosen when creating the render session in the previous section.
+ 
+###Test configuration
+####Abstract
+To perform a quick smoke test of your hit2assext configuration you can add a _Dynamic Element_ to your _DocDesign_ workspace as quoted below. If everything works it will print the text __'Hello, World!'__.
+#### Sample code
+Somewhere in your _Page Content_ between the creation and deletion of your render session, add a _Dynamic Content_ element to your _Page Content_ and set its XPath expression to the following value:  
+`hit2assext:testConfiguration()`  
+__Nota bene:__  
+* This function will print the static text __'Hello, World!'__. If this text does not appear within your document on publishing the document, your hit2assext configuration does not work. Here are some steps you can try to resolve your problem:
+ * Check if the hit2assext JAR file is on the class path of your _DocBase_ installations (including the _DocDesign_ desktop server)
+ * Check if you registered the hit2assext namespace with your DocDesign Document's namespaces
+ * Check the hit2assext logs in your log files, including the DocDesign desktop server logs
+
+###Create a new list variable
+####Abstract
+The main merit of the hit2assext system is the introduction of list variables into DocDesign. This sections shows how to create a new list variable and register it with the hit2assext render session context.
+####Sample code
+Within your _Page Content_ between the creation and deletion of your render session, add a _Dynamic Content_ element to your _Page Content_ and set its XPath expression to the following value:  
+`hit2assext:createList(var:read('renderSessionUuid'), 'abraxas')`  
+__Nota bene__:
+* This statement will create a new list named __abraxas__ inside the render session referenced by its unique id as stored in the _DocDesign_ _document variable_ __`'renderSessionUuid'`__.
+
+###Add a value to the end of a hit2assext list
+####Abstract
+Adding a value to the end of a list is one way to interact with hit2assext lists. After successful completion of this statement the length of the list will have increased by one, and the last item in the list will be the value added using this statement.
+####Syntax
+`hit2assext:addListValue( renderSessionUuid, listVariableName, newValue )`
+####Sample code
+Within your _Page Content_ after the creation and before the deletion of your render session, add a _Dynamic Content_ element to your _Page Content_ and set its XPath expression to the following value:  
+`hit2assext:addListValue(var:read('renderSessionUuid'), 'abraxas', 'John')`  
+__Nota bene__:  
+* This statement adds the value __'John'__ to the end of the list __'abraxas'__ available in the render session identified by the unique id as stored in the _DocDesign_ _Document variable_ __'renderSessionUuid'__.
+* Please note the recurring idiom of using `var:read('renderSessionUuid')` to refer to the unique id of the render session.
+
+###Retrieve a value from a hit2assext list variable
+####Abstract
+Using this statement you can access the elements of hit2assext lists using and index. The 1st element will have the index 0, the 2nd element the index 1, the nth element will have the index (n-1), the last element will have the index (listLength-1), where listLength is the number of elements found in the given list.
+####Syntax
+`hit2assext:getListValueAt( renderSessionUuid, listVariableName, index )`
+####Sample code
+Within your _Page Content_ after the creation and before the deletion of your render session, add a _Dynamic Content_ element to your _Page Content_ and set its XPath expression to the following value:  
+`hit2assext:getListValueAt(var:read('renderSessionUuid'), 'abraxas', 0)`  
+__Nota bene__:  
+* This statement will retrieve the 1st element from the list __'abraxas'__ available in the render session with the unique id stored in the document variable __'renderSissionUuid'__
+* If the given list has no such element (in this case: if the list is empty) this will yield in a RuntimeException thrown in your render engine!
+
 
 ## Maintenance and debugging
 
