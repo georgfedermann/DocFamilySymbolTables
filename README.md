@@ -152,7 +152,8 @@ __Nota bene__:
 
 ## Maintenance and debugging
 
-Please note: the hit2assext system does some helpful logging on the INFO level. If you want to track its behavior and maybe get some helpful debug information, set the logging level of the org.poormanscastle packages to INFO by adding this line to your log4j.properties file (which you can find here: DocDesignInstallationFolder/data/resource/log4j.properties)
+Please note: the hit2assext system does some helpful logging on the INFO level. If you want to track its behavior and maybe get some helpful debug information, set the logging level of the org.poormanscastle packages to INFO by adding this line to your __log4j.properties__ file (which in case of the _DocDesign_ desktop server you can find here: DocDesignInstallationFolder/data/resources/log4j.properties)  
+`log4j.logger.org.poormanscastle=DEBUG`
 
 # DISCLAIMER
 This product comes as is without no warranty whatsoever. Use it at your own discretion. If you need help with your HIT/CLOU migration project, be it that you migrate to DocFamily or any other output management product, I will be happy to help. At a price.  
