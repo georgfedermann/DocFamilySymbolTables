@@ -45,6 +45,16 @@ public interface RenderSessionContext {
     void addListValue(String listName, Object value);
 
     /**
+     * sets the value of the given list at the given index to the given value.
+     * Nota bene: before adding values to a list, the list must have been created
+     * using method addListVariable(String) beforehand.
+     * @param listName
+     * @param index
+     * @param value
+     */
+    Object setListValueAt(String listName, Integer index, Object value);
+
+    /**
      * this method can be used to retrieve the value at the specified index from
      * the list referenced by the given name.
      *
