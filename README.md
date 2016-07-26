@@ -136,6 +136,19 @@ Within your _Page Content_ after the creation and before the deletion of your re
 __Nota bene__:  
 * This statement adds the value __'John'__ to the end of the list __'abraxas'__ available in the render session identified by the unique id as stored in the _DocDesign_ _Document variable_ __'renderSessionUuid'__.
 * Please note the recurring idiom of using `var:read('renderSessionUuid')` to refer to the unique id of the render session.
+ 
+###Set a list value at a specified index
+####Abstract
+Setting the value at a specified list location is another way to interact with hit2assext lists. After successful completion of this statement the length of the list will be left unchanged, and the previous item at the specified location will have been exchanged with the given value.  
+####Syntax
+`hit2assext:setListValueAt( renderSessionUuid, listVariableName, index, newValue )`
+####Sample code
+Within your _Page Content_ after the creation and before the deletion of your render session, add a _Dynamic Content_ element to your _Page Content_ and set its XPath expression to the following value:  
+`hit2assext:addListValue(var:read('renderSessionUuid'), 'abraxas', 3, 'John')`  
+__Nota bene__:  
+* This statement replaces the current element in the specified list at the specified index with the specified object newValue.
+* There will be exceptions if the specified list does not exist, or if the specified index is out of range for the given list, i.e. if a index is given that exceeds the length of the list.
+* Since HIT/CLOU uses 1-based counting - as opposed to Java's 0-based counting - the 1st item of a hit2assext list has index 1.
 
 ###Retrieve a value from a hit2assext list variable
 ####Abstract
