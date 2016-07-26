@@ -144,7 +144,7 @@ Setting the value at a specified list location is another way to interact with h
 `hit2assext:setListValueAt( renderSessionUuid, listVariableName, index, newValue )`
 ####Sample code
 Within your _Page Content_ after the creation and before the deletion of your render session, add a _Dynamic Content_ element to your _Page Content_ and set its XPath expression to the following value:  
-`hit2assext:addListValue(var:read('renderSessionUuid'), 'abraxas', 3, 'John')`  
+`hit2assext:setListValueAt(var:read('renderSessionUuid'), 'abraxas', 3, 'John')`  
 __Nota bene__:  
 * This statement replaces the current element in the specified list at the specified index with the specified object newValue.
 * There will be exceptions if the specified list does not exist, or if the specified index is out of range for the given list, i.e. if a index is given that exceeds the length of the list.
