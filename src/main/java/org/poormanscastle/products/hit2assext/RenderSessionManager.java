@@ -121,6 +121,8 @@ public final class RenderSessionManager {
      * @param value
      */
     public static void setListValueAt(String renderSessionContextUuid, String listName, int index, Object value) {
+        logger.info(StringUtils.join("Received call: renderSessionContextUuid('", renderSessionContextUuid, "', ",
+                listName, "[", index - 1, "]=", value));
         Object oldValue = contextMap.get(renderSessionContextUuid).setListValueAt(listName, index - 1, value);
         logger.info(StringUtils.join("Replacing ", listName, "[", index - 1, "]=", oldValue, " with newValue ", value));
     }
