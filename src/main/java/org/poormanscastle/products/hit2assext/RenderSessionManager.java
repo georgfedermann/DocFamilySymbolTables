@@ -106,6 +106,8 @@ public final class RenderSessionManager {
      * @return
      */
     public static Object getListValueAt(String renderSessionContextUuid, String listName, int index) {
+        logger.info(StringUtils.join("Received call: getListValueAt('", renderSessionContextUuid, "', ",
+                listName, "[", index, "]"));
         Object value = contextMap.get(renderSessionContextUuid).getListValueAt(listName, index - 1);
         logger.info(StringUtils.join("Looking up value ", listName, "[", index - 1, "]=", value));
         return value;
@@ -121,6 +123,8 @@ public final class RenderSessionManager {
      * @param value
      */
     public static void setListValueAt(String renderSessionContextUuid, String listName, int index, Object value) {
+        logger.info(StringUtils.join("Received call: setListValueAt('", renderSessionContextUuid, "', ",
+                listName, "[", index - 1, "]=", value));
         Object oldValue = contextMap.get(renderSessionContextUuid).setListValueAt(listName, index - 1, value);
         logger.info(StringUtils.join("Replacing ", listName, "[", index - 1, "]=", oldValue, " with newValue ", value));
     }
