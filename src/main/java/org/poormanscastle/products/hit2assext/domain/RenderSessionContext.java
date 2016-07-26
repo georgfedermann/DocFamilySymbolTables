@@ -52,7 +52,7 @@ public interface RenderSessionContext {
      * @param index
      * @param value
      */
-    void setListValueAt(String listName, Integer index, Object value);
+    Object setListValueAt(String listName, Integer index, Object value);
 
     /**
      * this method can be used to retrieve the value at the specified index from
