@@ -13,9 +13,12 @@ import java.util.Map;
 /**
  * A RenderSessionManager manages the RenderSessionContext instances.
  * <p>
- * There exists exactly one RenderSessionManager with application scope. The application is the render
- * engine, i.e. the DocBase instance doing the rendering. Like the DocDesign desktop server or the
+ * There exists exactly one RenderSessionManager within application scope. The application is the render
+ * engine, i.e. the DocBase instance doing the rendering. E.g. the DocDesign desktop server or the
  * DocBase engine running somewhere as a service.
+ * <p>
+ * The DocFamily extension mechanism requires the methods of extension classes to be static.
+ * Therefore the RenderSessionManager implements no interface.
  * <p>
  * Created by georg on 7/15/16.
  */
@@ -106,6 +109,19 @@ public final class RenderSessionManager {
         Object value = contextMap.get(renderSessionContextUuid).getListValueAt(listName, index);
         logger.info(StringUtils.join("Looking up value ", listName, "[", index, "]=", value));
         return value;
+    }
+
+    /**
+     * this method can be used to set the list item at the specified index. The previous
+     * item at this index will be replaced with the specified value.
+     *
+     * @param renderSessionContextUuid
+     * @param listName
+     * @param index
+     * @param value
+     */
+    public static void setListValueAt(String renderSessionContextUuid, String listName, Integer index, Object value) {
+
     }
 
 }

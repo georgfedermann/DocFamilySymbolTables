@@ -64,6 +64,11 @@ class RenderSessionContextImpl implements RenderSessionContext {
     }
 
     @Override
+    public void setListValueAt(String listName, Integer index, Object value) {
+        listMap.get(listName).set(index, value);
+    }
+
+    @Override
     public Object getListValueAt(String listName, int index) {
         return listMap.get(listName).get(index);
     }
