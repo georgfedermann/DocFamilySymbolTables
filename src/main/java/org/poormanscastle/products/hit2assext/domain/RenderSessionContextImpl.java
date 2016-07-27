@@ -1,5 +1,7 @@
 package org.poormanscastle.products.hit2assext.domain;
 
+import org.apache.commons.lang3.StringUtils;
+import org.apache.log4j.Logger;
 import org.joda.time.DateTime;
 import org.joda.time.Duration;
 
@@ -11,7 +13,11 @@ import java.util.UUID;
 
 class RenderSessionContextImpl implements RenderSessionContext {
 
+    private final static Logger logger = Logger.getLogger(RenderSessionContextImpl.class);
+
     private final Map<String, List<Object>> listMap = new HashMap<>();
+
+    private final Map<String, Object> scalarMap = new HashMap<>();
 
     /**
      * remember when this session item was created. If the clean up does not work for some reason
@@ -46,20 +52,17 @@ class RenderSessionContextImpl implements RenderSessionContext {
     }
 
     @Override
-    public String toString() {
-        return "RenderSessionContextImpl{" +
-                "creationDateTime=" + creationDateTime +
-                ", uuid='" + uuid + '\'' +
-                '}';
-    }
-
-    @Override
     public void addListVariable(String name) {
         listMap.put(name, new LinkedList<>());
     }
 
     @Override
     public void addListValue(String listName, Object value) {
+        // fun fact: if in HIT/CLOU a variable is accessed which has not been declared before,
+        // it gets created at the time of first access.
+        if (listMap.get(listName) == null) {
+            addListVariable(listName);
+        }
         listMap.get(listName).add(value);
     }
 
@@ -70,7 +73,45 @@ class RenderSessionContextImpl implements RenderSessionContext {
 
     @Override
     public Object getListValueAt(String listName, int index) {
-        return listMap.get(listName).get(index);
+        List<?> list = listMap.get(listName);
+        if (list == null) {
+            logger.error(StringUtils.join("The given listName ", listName, " has not been initialized. Please use method RenderSessionManager.createList(String renderSessionContextUuid, String listName) to create the list before referencing it."));
+            return StringUtils.join("hitassext:ERROR: no list with name ", listName);
+        } else if (index < 0 || index >= list.size()) {
+            logger.error(StringUtils.join("Index ", index, " invalid for list ", listName, ".size()=", list.size()));
+            return StringUtils.join("hitassext:ERROR: IndexOutOfBounds");
+        } else {
+            return listMap.get(listName).get(index);
+        }
     }
-    
+
+    @Override
+    public void addScalarVariable(String variableName) {
+        scalarMap.put(variableName, "");
+    }
+
+    @Override
+    public void setScalarVariableValue(String variableName, Object value) {
+        scalarMap.put(variableName, value);
+    }
+
+    @Override
+    public Object getScalarVariableValue(String variableName) {
+        Object value = scalarMap.get(variableName);
+        if (value == null) {
+            logger.error(StringUtils.join("No variable exists for variableName ", variableName));
+            return StringUtils.join("hitassext:ERROR: No variable exists for variableName ", variableName);
+        } else {
+            return value;
+        }
+    }
+
+    @Override
+    public String toString() {
+        return "RenderSessionContextImpl{" +
+                "creationDateTime=" + creationDateTime +
+                ", uuid='" + uuid + '\'' +
+                '}';
+    }
+
 }
