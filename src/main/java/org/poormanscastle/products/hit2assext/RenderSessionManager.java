@@ -68,7 +68,7 @@ public final class RenderSessionManager {
         }
     }
 
-    public static void createScalarVariable(String renderSessionContextUuid, String variableName){
+    public static void createScalarVariable(String renderSessionContextUuid, String variableName) {
         logger.info(StringUtils.join("Creating new scalar variable with name ", variableName, " in RenderSessionContext with uuid ", renderSessionContextUuid, "."));
         contextMap.get(renderSessionContextUuid).addScalarVariable(variableName);
     }
@@ -132,6 +132,16 @@ public final class RenderSessionManager {
                 listName, "[", index - 1, "]=", value));
         Object oldValue = contextMap.get(renderSessionContextUuid).setListValueAt(listName, index - 1, value);
         logger.info(StringUtils.join("Replacing ", listName, "[", index - 1, "]=", oldValue, " with newValue ", value));
+    }
+
+    public static void setScalarVariableValue(String renderSessionContextUuid, String variableName, Object value) {
+        logger.info(StringUtils.join("Received call: setScalarVariableValue(", renderSessionContextUuid, ", ", variableName, ", ", value));
+        contextMap.get(renderSessionContextUuid).setScalarVariableValue(variableName, value);
+    }
+
+    public static Object getScalarVariableValue(String renderSessionContextUuid, String variableName) {
+        logger.info(StringUtils.join("Received call: getScalarVariableValue(", renderSessionContextUuid, ", ", variableName));
+        return contextMap.get(renderSessionContextUuid).getScalarVariableValue(variableName);
     }
 
 }
