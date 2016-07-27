@@ -37,7 +37,9 @@ public interface RenderSessionContext {
     /**
      * appends the given value at the end of the list identified by the given name.
      * Nota bene: before adding values to a list, the list must have been created
-     * using method addListVariable(String) beforehand.
+     * using method addListVariable(String) beforehand (or else it will be created
+     * at this time automatically - for your convenience and because our client asked
+     * us not to be nitpickers about this).
      *
      * @param listName
      * @param value
@@ -48,6 +50,7 @@ public interface RenderSessionContext {
      * sets the value of the given list at the given index to the given value.
      * Nota bene: before adding values to a list, the list must have been created
      * using method addListVariable(String) beforehand.
+     *
      * @param listName
      * @param index
      * @param value
@@ -63,5 +66,27 @@ public interface RenderSessionContext {
      * @return
      */
     Object getListValueAt(String listName, int index);
+
+    /**
+     * create an new scalar variable which can be referenced using the given name.
+     *
+     * @param variableName
+     */
+    void addScalarVariable(String variableName);
+
+    /**
+     * this method can be used to set the value of a scalar variable.
+     *
+     * @param variableName
+     * @param value
+     */
+    void setScalarVariableValue(String variableName, Object value);
+
+    /**
+     * this method can be used to retrieve the value of a scalar variable.
+     * @param variableName
+     * @return
+     */
+    Object getScalarVariableValue(String variableName);
 
 }

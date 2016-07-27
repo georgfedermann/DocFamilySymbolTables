@@ -68,6 +68,11 @@ public final class RenderSessionManager {
         }
     }
 
+    public static void createScalarVariable(String renderSessionContextUuid, String variableName){
+        logger.info(StringUtils.join("Creating new scalar variable with name ", variableName, " in RenderSessionContext with uuid ", renderSessionContextUuid, "."));
+        contextMap.get(renderSessionContextUuid).addScalarVariable(variableName);
+    }
+
     /**
      * creates a new, empty list object. a list is a symbol that can hold several values
      * which can be addressed using the name of the variable and an index given in brackets [].
