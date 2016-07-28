@@ -16,6 +16,7 @@
         <project.source.version>1.7</project.source.version>
         <project.target.version>1.7</project.target.version>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+        <version.saxon>8.8.0.7</version.saxon>
     </properties>
 
     <dependencies>
@@ -48,6 +49,18 @@
             <groupId>com.google.guava</groupId>
             <artifactId>guava</artifactId>
             <version>18.0</version>
+        </dependency>
+        <dependency>
+            <groupId>net.sf.saxon</groupId>
+            <artifactId>saxon-xpath</artifactId>
+            <version>${version.saxon}</version>
+            <scope>compile</scope>
+        </dependency>
+        <dependency>
+            <groupId>net.sf.saxon</groupId>
+            <artifactId>saxon-dom</artifactId>
+            <version>${version.saxon}</version>
+            <scope>compile</scope>
         </dependency>
     </dependencies>
     <build>

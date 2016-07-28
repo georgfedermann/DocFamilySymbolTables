@@ -1,5 +1,7 @@
 package org.poormanscastle.products.hit2assext;
 
+import net.sf.saxon.tinytree.TinyNodeImpl;
+import net.sf.saxon.trans.XPathException;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.log4j.Logger;
 import org.poormanscastle.products.hit2assext.domain.RenderSessionContext;
@@ -141,12 +143,22 @@ public final class RenderSessionManager {
     }
 
     public static void incrementXmlSequence(String renderSessionContextUuid) {
-        logger.info(StringUtils.join("Received call: incementXmlSequence('", renderSessionContextUuid, "')"));
+        logger.info(StringUtils.join("Received call: incrementXmlSequence('", renderSessionContextUuid, "')"));
         contextMap.get(renderSessionContextUuid).incrementXmlSequence();
     }
 
     public static void setScalarVariableValue(String renderSessionContextUuid, String variableName, Object value) {
-        logger.info(StringUtils.join("Received call: setScalarVariableValue(", renderSessionContextUuid, ", ", variableName, ", ", value));
+        logger.info(StringUtils.join("Received call: setScalarVariableValue(", renderSessionContextUuid, ", ", variableName, ", ", value, ")"));
+        try {
+            if (value instanceof List && ((List) value).get(0) instanceof TinyNodeImpl) {
+                logger.info("Autoconverting the text node to atomic value");
+                value = ((TinyNodeImpl) ((List) value).get(0)).atomize();
+            } else {
+                logger.info("No need to convert to atomic value");
+            }
+        } catch (XPathException e) {
+            logger.error("Could not transform saxon node type to saxon value type.");
+        }
         contextMap.get(renderSessionContextUuid).setScalarVariableValue(variableName, value);
     }
 
