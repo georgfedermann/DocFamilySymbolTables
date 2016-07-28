@@ -134,6 +134,17 @@ public final class RenderSessionManager {
         logger.info(StringUtils.join("Replacing ", listName, "[", index - 1, "]=", oldValue, " with newValue ", value));
     }
 
+    public static int getXmlSequence(String renderSessionContextUuid) {
+        int val = contextMap.get(renderSessionContextUuid).getXmlSequence();
+        logger.info(StringUtils.join("Received call: getXmlSequence('", renderSessionContextUuid, "')=", val));
+        return val;
+    }
+
+    public static void incrementXmlSequence(String renderSessionContextUuid) {
+        logger.info(StringUtils.join("Received call: incementXmlSequence('", renderSessionContextUuid, "')"));
+        contextMap.get(renderSessionContextUuid).incrementXmlSequence();
+    }
+
     public static void setScalarVariableValue(String renderSessionContextUuid, String variableName, Object value) {
         logger.info(StringUtils.join("Received call: setScalarVariableValue(", renderSessionContextUuid, ", ", variableName, ", ", value));
         contextMap.get(renderSessionContextUuid).setScalarVariableValue(variableName, value);
@@ -142,6 +153,10 @@ public final class RenderSessionManager {
     public static Object getScalarVariableValue(String renderSessionContextUuid, String variableName) {
         logger.info(StringUtils.join("Received call: getScalarVariableValue(", renderSessionContextUuid, ", ", variableName));
         return contextMap.get(renderSessionContextUuid).getScalarVariableValue(variableName);
+    }
+
+    public static void printLogStatement(String renderSessionContextUuid, String logMessage) {
+        logger.info(StringUtils.join("Received call: printLogStatement(", renderSessionContextUuid, ", ", logMessage));
     }
 
 }

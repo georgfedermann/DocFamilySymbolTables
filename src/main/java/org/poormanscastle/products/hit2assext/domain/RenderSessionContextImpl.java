@@ -19,6 +19,8 @@ class RenderSessionContextImpl implements RenderSessionContext {
 
     private final Map<String, Object> scalarMap = new HashMap<>();
 
+    private int xmlSequence = 1;
+
     /**
      * remember when this session item was created. If the clean up does not work for some reason
      * old sessions can be identified as obsolete by their age (e.g. older than 20s) and be
@@ -104,6 +106,16 @@ class RenderSessionContextImpl implements RenderSessionContext {
         } else {
             return value;
         }
+    }
+
+    @Override
+    synchronized public int getXmlSequence() {
+        return xmlSequence;
+    }
+
+    @Override
+    synchronized public void incrementXmlSequence() {
+        xmlSequence++;
     }
 
     @Override
