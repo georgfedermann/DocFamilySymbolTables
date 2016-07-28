@@ -89,4 +89,8 @@ public interface RenderSessionContext {
      */
     Object getScalarVariableValue(String variableName);
 
+    int getXmlSequence();
+
+    void incrementXmlSequence();
+
 }

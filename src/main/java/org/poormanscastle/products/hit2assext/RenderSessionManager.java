@@ -1,5 +1,7 @@
 package org.poormanscastle.products.hit2assext;
 
+import net.sf.saxon.tinytree.TinyNodeImpl;
+import net.sf.saxon.trans.XPathException;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.log4j.Logger;
 import org.poormanscastle.products.hit2assext.domain.RenderSessionContext;
@@ -68,7 +70,7 @@ public final class RenderSessionManager {
         }
     }
 
-    public static void createScalarVariable(String renderSessionContextUuid, String variableName){
+    public static void createScalarVariable(String renderSessionContextUuid, String variableName) {
         logger.info(StringUtils.join("Creating new scalar variable with name ", variableName, " in RenderSessionContext with uuid ", renderSessionContextUuid, "."));
         contextMap.get(renderSessionContextUuid).addScalarVariable(variableName);
     }
@@ -132,6 +134,41 @@ public final class RenderSessionManager {
                 listName, "[", index - 1, "]=", value));
         Object oldValue = contextMap.get(renderSessionContextUuid).setListValueAt(listName, index - 1, value);
         logger.info(StringUtils.join("Replacing ", listName, "[", index - 1, "]=", oldValue, " with newValue ", value));
+    }
+
+    public static int getXmlSequence(String renderSessionContextUuid) {
+        int val = contextMap.get(renderSessionContextUuid).getXmlSequence();
+        logger.info(StringUtils.join("Received call: getXmlSequence('", renderSessionContextUuid, "')=", val));
+        return val;
+    }
+
+    public static void incrementXmlSequence(String renderSessionContextUuid) {
+        logger.info(StringUtils.join("Received call: incrementXmlSequence('", renderSessionContextUuid, "')"));
+        contextMap.get(renderSessionContextUuid).incrementXmlSequence();
+    }
+
+    public static void setScalarVariableValue(String renderSessionContextUuid, String variableName, Object value) {
+        logger.info(StringUtils.join("Received call: setScalarVariableValue(", renderSessionContextUuid, ", ", variableName, ", ", value, ")"));
+        try {
+            if (value instanceof List && ((List) value).get(0) instanceof TinyNodeImpl) {
+                logger.info("Autoconverting the text node to atomic value");
+                value = ((TinyNodeImpl) ((List) value).get(0)).atomize();
+            } else {
+                logger.info("No need to convert to atomic value");
+            }
+        } catch (XPathException e) {
+            logger.error("Could not transform saxon node type to saxon value type.");
+        }
+        contextMap.get(renderSessionContextUuid).setScalarVariableValue(variableName, value);
+    }
+
+    public static Object getScalarVariableValue(String renderSessionContextUuid, String variableName) {
+        logger.info(StringUtils.join("Received call: getScalarVariableValue(", renderSessionContextUuid, ", ", variableName));
+        return contextMap.get(renderSessionContextUuid).getScalarVariableValue(variableName);
+    }
+
+    public static void printLogStatement(String renderSessionContextUuid, String logMessage) {
+        logger.info(StringUtils.join("Received call: printLogStatement(", renderSessionContextUuid, ", ", logMessage));
     }
 
 }
