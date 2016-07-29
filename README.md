@@ -209,11 +209,22 @@ __Nota bene__:
 * This statement will retrieve the 1st element from the list __'abraxas'__ available in the render session with the unique id stored in the document variable __'renderSissionUuid'__
 * If the given list has no such element (in this case: if the list is empty) this will yield in a RuntimeException thrown in your render engine!
 
-
 ## Maintenance and debugging
 
 Please note: the hit2assext system does some helpful logging on the INFO level. If you want to track its behavior and maybe get some helpful debug information, set the logging level of the org.poormanscastle packages to INFO by adding this line to your __log4j.properties__ file (which in case of the _DocDesign_ desktop server you can find here: DocDesignInstallationFolder/data/resources/log4j.properties)  
 `log4j.logger.org.poormanscastle=DEBUG`
+
+## Sample Application
+###Abstract
+This section gives a sample application of the hit2assext project in the context of the hit2ass project. On the one hand this gives a motiviation for "Why is there a hit2assext project" and on the other hand shows how to use the hit2assext project in practice.
+###Motivation
+This hit2ass project needs to map imperative concepts like scalar variables, list variables, FOR loops and WHILE loops to Assentis DocDesign Workspaces.  
+In this context, FOR loops are iterative structures that apply a given logic to a predefined set of elements.  
+In this context, WHILE loops are iterative structures that apply a given logic to a predefined set of elements until a given condition fails.  
+A standard approach in HIT/CLOU to retrieve business data for document rendering is parsing a plain text file where each dataset is written to a line, i.e. we are working with new line separated values here. When a HIT/CLOU document template is rendered, values from the business data file are inserted at defined locations on demand using insert statements.  
+On the other hand, DocFamily uses XML data to store and retrieve business data from. Access to the HIT/CLOU file is linear and sequential while data access in DocFamily works via XPath expression evaluation and is random access. To bridge the gap, the input data file is transformed to XML automatically by mapping each line in the plain text file to one XML element. The document order of those XML elements represents the order of the lines in the input file. Thus, this XML must not be transformed in a way that would disturb the correct order of those XML elements. To keep track of the current XML element that will be evaluated when the next business data gap needs to be filled in the document template, a hit2assext XML sequence is introduced. Thus, each time a dynamic value is supplemented in the document template, an XPath expression will use the hit2assext XML sequence to retrieve the next value from the business data XML. Afterwards, the XML sequence value is incremented to point at the next data set in line. This code is used to retrieve the next value and increase the XML sequence:  
+`hit2assext:setScalarVariableValue(var:read('renderSessionUuid'), 'lelement', /UserData/payload/line[@lineNr = hit2assext:getXmlSequence(var:read('renderSessionUuid'))]/text()) | hit2assext:incrementXmlSequence(var:read('renderSessionUuid'))`  
+
 
 # DISCLAIMER
 This product comes as is without no warranty whatsoever. Use it at your own discretion. If you need help with your HIT/CLOU migration project, be it that you migrate to DocFamily or any other output management product, I will be happy to help. At a price.  
