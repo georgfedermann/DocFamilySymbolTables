@@ -3,8 +3,9 @@
 
 hit2assext stands for: extension classes for the HIT to Assentis DocFamily transformer project.
 
-This project is an extension to the document designer DocDesign of the 
-output management system Assentis DocFamily. DocDesign is an XSL-FO design
+This project is an extension to the render engine DocBase of the 
+output management system Assentis DocFamily. It can be used in the stand-alone render engine
+as well as the desktop server of Assentis DocDesign. DocDesign is an XSL-FO design
 tool. It produces XSLT output that can be rendered to various output formats
 like PDF etc.
 
@@ -23,6 +24,17 @@ document variables. But there're still uncovered grounds:
 * lists / fields
 * tables
 * while loops
+
+This project adds limited support for imperative structures like for loops and
+while loops. While the support was quite limited in the beginnings of this project,
+more and more ground has been covered so far. Also, since due to either a bug or
+an undocumented feature __DocFamily__ _Document Variables_ will not work in the context
+of xslt for-each structures, a scalar variable concept also is introduced by this
+project. __DocFamily__ _Document Variables_ are used as a hook point to provide
+references to render session specific symbol tables, while for all other matters,
+hit2assext lists and scalar variables should be used for robustness and dependability.
+Please see this sample workspace for an example where _Document Variables_ will fail in
+the context of XSLT for-each structures / DocFamily Repetition structures.
 
 While this project clearly is intended to support the hit2ass project it can
 be used independent from the hit2ass project. By adding this extension to
@@ -116,6 +128,41 @@ __Nota bene:__
  * Check if you registered the hit2assext namespace with your DocDesign Document's namespaces
  * Check the hit2assext logs in your log files, including the DocDesign desktop server logs
 
+###Create a new scalar variable
+####Abstract
+A scalar variable is a symbol that can store one mutable value. The mechanism accepts scalar values like String, Integer, Boolean, etc. that are stored as Objects. The mechanism also accepts wrapper types as used by the Saxon XSLT processor, by testing for a List<net.sf.saxon.om.NodeInfo> and using the methode NodeInfo.atomize() to store saxon values as net.sf.saxon.value.Value.
+####Sample code
+Within your _Page Content_ between the creation and deletion of your render session, add a _Dynamic Content_ element to your _Page Content_ and set its XPath expression to the following value:  
+`hit2assext:createScalarVariable(var:read('renderSessionUuid'), 'varName')`  
+__Nota bene__:
+* This statement will create a new scalar variable named __varName__ inside the render session referenced by its unique id as stored in the _DocDesign_ _document variable_ __`'renderSessionUuid'`__.
+* You have to create a scalar variable before you read it, or the system will crash. If you write a scalar variable without creating it beforehand, the system will gracefully create it for you and then write the value to it.
+
+###Write a value to a scalar variable
+####Abstract
+Using this mechanism you can store values to mutable variables in the context of DocFamily DocDesign workspaces, thus breaking the XSL concept of immutability, idempotency, etc.
+####Sample code
+Within your _Page Content_ between the creation and deletion of your render session, add a _Dynamic Content_ element to your _Page Content_ and set its XPath expression to the following value:  
+`hit2assext:setScalarVariableValue(var:read('renderSessionUuid'), 'lelement', XPathExpression)`  
+__Nota bene__:
+* This will evaluate the given XPathExpression and write the resulting value to the variable named _lelement_ in the given render session.
+To write the value 3 to a scalar variable named lelement use this statement:  
+`hit2assext:setScalarVariableValue(var:read('renderSessionUuid'), 'lelement', 3 )`  
+To write the value "John" to a scalar variable named _firstName_ use this statement:  
+`hit2assext:setScalarVariableValue(var:read('renderSessionUuid'), 'firstName', 'John' )`  
+To write the textual content of XML element /Letter/payload/recipient/firstName to a scalar variable named firstname use this statement:  `hit2assext:setScalarVariableValue(var:read('renderSessionUuid'), 'firstName', /Letter/payload/recipient/firstname/text() )`  
+To use the hit2assext XML mapping mechanism to write the value of the next data line to a variable called lelement, as would be done to map a HIT/CLOU WHILE loop to a DocDesign workspace, use this statement:
+`hit2assext:setScalarVariableValue(var:read('renderSessionUuid'), 'lelement', /UserData/payload/line[@lineNr = hit2assext:getXmlSequence(var:read('renderSessionUuid'))]/text()) | hit2assext:incrementXmlSequence(var:read('renderSessionUuid'))`  
+__Nota bene__:
+* The XPath OR operator is used as a vehicle here to evaluate two different XPath expressions in one step. The first expression retrieves the a value from the DocFamily userData XML, while the second expression increments the XML pointer so the system knows which line to read next.
+
+###Read a value from a scalar variable
+####Abstract
+A scalar variable can only be read after it has been created, either by explicit creation of the symbol in the hit2assext render session, or by implicit creation by writing a value to a hit2assext scalar variable.
+####Sample code
+Within your _Page Content_ between the creation and deletion of your render session, add a _Dynamic Content_ element to your _Page Content_ and set its XPath expression to the following value:  
+`hit2assext:getScalarVariableValue(var:read('renderSessionUuid'), 'lelement')`  
+
 ###Create a new list variable
 ####Abstract
 The main merit of the hit2assext system is the introduction of list variables into DocDesign. This sections shows how to create a new list variable and register it with the hit2assext render session context.
@@ -162,11 +209,22 @@ __Nota bene__:
 * This statement will retrieve the 1st element from the list __'abraxas'__ available in the render session with the unique id stored in the document variable __'renderSissionUuid'__
 * If the given list has no such element (in this case: if the list is empty) this will yield in a RuntimeException thrown in your render engine!
 
-
 ## Maintenance and debugging
 
 Please note: the hit2assext system does some helpful logging on the INFO level. If you want to track its behavior and maybe get some helpful debug information, set the logging level of the org.poormanscastle packages to INFO by adding this line to your __log4j.properties__ file (which in case of the _DocDesign_ desktop server you can find here: DocDesignInstallationFolder/data/resources/log4j.properties)  
 `log4j.logger.org.poormanscastle=DEBUG`
+
+## Sample Application
+###Abstract
+This section gives a sample application of the hit2assext project in the context of the hit2ass project. On the one hand this gives a motiviation for "Why is there a hit2assext project" and on the other hand shows how to use the hit2assext project in practice.
+###Motivation
+This hit2ass project needs to map imperative concepts like scalar variables, list variables, FOR loops and WHILE loops to Assentis DocDesign Workspaces.  
+In this context, FOR loops are iterative structures that apply a given logic to a predefined set of elements.  
+In this context, WHILE loops are iterative structures that apply a given logic to a predefined set of elements until a given condition fails.  
+A standard approach in HIT/CLOU to retrieve business data for document rendering is parsing a plain text file where each dataset is written to a line, i.e. we are working with new line separated values here. When a HIT/CLOU document template is rendered, values from the business data file are inserted at defined locations on demand using insert statements.  
+On the other hand, DocFamily uses XML data to store and retrieve business data from. Access to the HIT/CLOU file is linear and sequential while data access in DocFamily works via XPath expression evaluation and is random access. To bridge the gap, the input data file is transformed to XML automatically by mapping each line in the plain text file to one XML element. The document order of those XML elements represents the order of the lines in the input file. Thus, this XML must not be transformed in a way that would disturb the correct order of those XML elements. To keep track of the current XML element that will be evaluated when the next business data gap needs to be filled in the document template, a hit2assext XML sequence is introduced. Thus, each time a dynamic value is supplemented in the document template, an XPath expression will use the hit2assext XML sequence to retrieve the next value from the business data XML. Afterwards, the XML sequence value is incremented to point at the next data set in line. This code is used to retrieve the next value and increase the XML sequence:  
+`hit2assext:setScalarVariableValue(var:read('renderSessionUuid'), 'lelement', /UserData/payload/line[@lineNr = hit2assext:getXmlSequence(var:read('renderSessionUuid'))]/text()) | hit2assext:incrementXmlSequence(var:read('renderSessionUuid'))`  
+
 
 # DISCLAIMER
 This product comes as is without no warranty whatsoever. Use it at your own discretion. If you need help with your HIT/CLOU migration project, be it that you migrate to DocFamily or any other output management product, I will be happy to help. At a price.  
