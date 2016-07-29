@@ -3,8 +3,9 @@
 
 hit2assext stands for: extension classes for the HIT to Assentis DocFamily transformer project.
 
-This project is an extension to the document designer DocDesign of the 
-output management system Assentis DocFamily. DocDesign is an XSL-FO design
+This project is an extension to the render engine DocBase of the 
+output management system Assentis DocFamily. It can be used in the stand-alone render engine
+as well as the desktop server of Assentis DocDesign. DocDesign is an XSL-FO design
 tool. It produces XSLT output that can be rendered to various output formats
 like PDF etc.
 
@@ -23,6 +24,17 @@ document variables. But there're still uncovered grounds:
 * lists / fields
 * tables
 * while loops
+
+This project adds limited support for imperative structures like for loops and
+while loops. While the support was quite limited in the beginnings of this project,
+more and more ground has been covered so far. Also, since due to either a bug or
+an undocumented feature __DocFamily__ _Document Variables_ will not work in the context
+of xslt for-each structures, a scalar variable concept also is introduced by this
+project. __DocFamily__ _Document Variables_ are used as a hook point to provide
+references to render session specific symbol tables, while for all other matters,
+hit2assext lists and scalar variables should be used for robustness and dependability.
+Please see this sample workspace for an example where _Document Variables_ will fail in
+the context of XSLT for-each structures / DocFamily Repetition structures.
 
 While this project clearly is intended to support the hit2ass project it can
 be used independent from the hit2ass project. By adding this extension to
@@ -115,6 +127,41 @@ __Nota bene:__
  * Check if the hit2assext JAR file is on the class path of your _DocBase_ installations (including the _DocDesign_ desktop server)
  * Check if you registered the hit2assext namespace with your DocDesign Document's namespaces
  * Check the hit2assext logs in your log files, including the DocDesign desktop server logs
+
+###Create a new scalar variable
+####Abstract
+A scalar variable is a symbol that can store one mutable value. The mechanism accepts scalar values like String, Integer, Boolean, etc. that are stored as Objects. The mechanism also accepts wrapper types as used by the Saxon XSLT processor, by testing for a List<net.sf.saxon.om.NodeInfo> and using the methode NodeInfo.atomize() to store saxon values as net.sf.saxon.value.Value.
+####Sample code
+Within your _Page Content_ between the creation and deletion of your render session, add a _Dynamic Content_ element to your _Page Content_ and set its XPath expression to the following value:  
+`hit2assext:createScalarVariable(var:read('renderSessionUuid'), 'varName')`  
+__Nota bene__:
+* This statement will create a new scalar variable named __varName__ inside the render session referenced by its unique id as stored in the _DocDesign_ _document variable_ __`'renderSessionUuid'`__.
+* You have to create a scalar variable before you read it, or the system will crash. If you write a scalar variable without creating it beforehand, the system will gracefully create it for you and then write the value to it.
+
+###Write a value to a scalar variable
+####Abstract
+Using this mechanism you can store values to mutable variables in the context of DocFamily DocDesign workspaces, thus breaking the XSL concept of immutability, idempotency, etc.
+####Sample code
+Within your _Page Content_ between the creation and deletion of your render session, add a _Dynamic Content_ element to your _Page Content_ and set its XPath expression to the following value:  
+`hit2assext:setScalarVariableValue(var:read('renderSessionUuid'), 'lelement', XPathExpression)`  
+__Nota bene__:
+* This will evaluate the given XPathExpression and write the resulting value to the variable named _lelement_ in the given render session.
+To write the value 3 to a scalar variable named lelement use this statement:  
+`hit2assext:setScalarVariableValue(var:read('renderSessionUuid'), 'lelement', 3 )`  
+To write the value "John" to a scalar variable named _firstName_ use this statement:  
+`hit2assext:setScalarVariableValue(var:read('renderSessionUuid'), 'firstName', 'John' )`  
+To write the textual content of XML element /Letter/payload/recipient/firstName to a scalar variable named firstname use this statement:  `hit2assext:setScalarVariableValue(var:read('renderSessionUuid'), 'firstName', /Letter/payload/recipient/firstname/text() )`  
+To use the hit2assext XML mapping mechanism to write the value of the next data line to a variable called lelement, as would be done to map a HIT/CLOU WHILE loop to a DocDesign workspace, use this statement:
+`hit2assext:setScalarVariableValue(var:read('renderSessionUuid'), 'lelement', /UserData/payload/line[@lineNr = hit2assext:getXmlSequence(var:read('renderSessionUuid'))]/text()) | hit2assext:incrementXmlSequence(var:read('renderSessionUuid'))`  
+__Nota bene__:
+* The XPath OR operator is used as a vehicle here to evaluate two different XPath expressions in one step. The first expression retrieves the a value from the DocFamily userData XML, while the second expression increments the XML pointer so the system knows which line to read next.
+
+###Read a value from a scalar variable
+####Abstract
+A scalar variable can only be read after it has been created, either by explicit creation of the symbol in the hit2assext render session, or by implicit creation by writing a value to a hit2assext scalar variable.
+####Sample code
+Within your _Page Content_ between the creation and deletion of your render session, add a _Dynamic Content_ element to your _Page Content_ and set its XPath expression to the following value:  
+`hit2assext:getScalarVariableValue(var:read('renderSessionUuid'), 'lelement')`  
 
 ###Create a new list variable
 ####Abstract
