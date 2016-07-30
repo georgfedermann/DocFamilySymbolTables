@@ -133,10 +133,11 @@ __Nota bene:__
 A scalar variable is a symbol that can store one mutable value. The mechanism accepts scalar values like String, Integer, Boolean, etc. that are stored as Objects. The mechanism also accepts wrapper types as used by the Saxon XSLT processor, by testing for a List<net.sf.saxon.om.NodeInfo> and using the methode NodeInfo.atomize() to store saxon values as net.sf.saxon.value.Value.
 ####Sample code
 Within your _Page Content_ between the creation and deletion of your render session, add a _Dynamic Content_ element to your _Page Content_ and set its XPath expression to the following value:  
-`hit2assext:createScalarVariable(var:read('renderSessionUuid'), 'varName')`  
+`hit2assext:createScalarVariable(var:read('renderSessionUuid'), 'varName', value)`  
 __Nota bene__:
 * This statement will create a new scalar variable named __varName__ inside the render session referenced by its unique id as stored in the _DocDesign_ _document variable_ __`'renderSessionUuid'`__.
 * You have to create a scalar variable before you read it, or the system will crash. If you write a scalar variable without creating it beforehand, the system will gracefully create it for you and then write the value to it.
+* The argument __value__ is an XPath expression that will be evaluated by the XSL processor (Saxon in case of the DocFamily) before being handed over to the hit2assext classes.
 
 ###Write a value to a scalar variable
 ####Abstract
