@@ -143,9 +143,9 @@ public final class RenderSessionManager {
         contextMap.get(renderSessionContextUuid).incrementXmlSequence();
     }
 
-    public static void createScalarVariable(String renderSessionContextUuid, String variableName) {
-        logger.info(StringUtils.join("Creating new scalar variable with name ", variableName, " in RenderSessionContext with uuid ", renderSessionContextUuid, "."));
-        contextMap.get(renderSessionContextUuid).addScalarVariable(variableName);
+    public static void createScalarVariable(String renderSessionContextUuid, String variableName, Object value) {
+        logger.info(StringUtils.join("Creating new scalar variable with name ", variableName, " in RenderSessionContext with uuid ", renderSessionContextUuid, ". Delegating to RenderSessionManager.setScalarVariable()"));
+        RenderSessionManager.setScalarVariableValue(renderSessionContextUuid, variableName, value);
     }
 
     public static void setScalarVariableValue(String renderSessionContextUuid, String variableName, Object value) {
