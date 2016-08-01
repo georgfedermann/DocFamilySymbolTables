@@ -1,7 +1,8 @@
 package org.poormanscastle.products.hit2assext;
 
-import net.sf.saxon.tinytree.TinyNodeImpl;
+import net.sf.saxon.om.NodeInfo;
 import net.sf.saxon.trans.XPathException;
+import net.sf.saxon.value.Value;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.log4j.Logger;
 import org.poormanscastle.products.hit2assext.domain.RenderSessionContext;
@@ -68,11 +69,6 @@ public final class RenderSessionManager {
         if (foundObject == null) {
             logger.warn(StringUtils.join("No RenderSession for uuid ", uuid, " was found."));
         }
-    }
-
-    public static void createScalarVariable(String renderSessionContextUuid, String variableName) {
-        logger.info(StringUtils.join("Creating new scalar variable with name ", variableName, " in RenderSessionContext with uuid ", renderSessionContextUuid, "."));
-        contextMap.get(renderSessionContextUuid).addScalarVariable(variableName);
     }
 
     /**
@@ -147,12 +143,17 @@ public final class RenderSessionManager {
         contextMap.get(renderSessionContextUuid).incrementXmlSequence();
     }
 
+    public static void createScalarVariable(String renderSessionContextUuid, String variableName, Object value) {
+        logger.info(StringUtils.join("Creating new scalar variable with name ", variableName, " in RenderSessionContext with uuid ", renderSessionContextUuid, ". Delegating to RenderSessionManager.setScalarVariable()"));
+        RenderSessionManager.setScalarVariableValue(renderSessionContextUuid, variableName, value);
+    }
+
     public static void setScalarVariableValue(String renderSessionContextUuid, String variableName, Object value) {
         logger.info(StringUtils.join("Received call: setScalarVariableValue(", renderSessionContextUuid, ", ", variableName, ", ", value, ")"));
         try {
-            if (value instanceof List && ((List) value).get(0) instanceof TinyNodeImpl) {
-                logger.info("Autoconverting the text node to atomic value");
-                value = ((TinyNodeImpl) ((List) value).get(0)).atomize();
+            if (value instanceof List && ((List) value).get(0) instanceof NodeInfo) {
+                value = ((NodeInfo) ((List) value).get(0)).atomize();
+                logger.info(StringUtils.join("Autoconverting the text node to atomic value: ", ((Value) value).getStringValue()));
             } else {
                 logger.info("No need to convert to atomic value");
             }
