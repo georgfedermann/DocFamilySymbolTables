@@ -184,7 +184,7 @@ Within your _Page Content_ after the creation and before the deletion of your re
 __Nota bene__:  
 * This statement adds the value __'John'__ to the end of the list __'abraxas'__ available in the render session identified by the unique id as stored in the _DocDesign_ _Document variable_ __'renderSessionUuid'__.
 * Please note the recurring idiom of using `var:read('renderSessionUuid')` to refer to the unique id of the render session.
- 
+
 ###Set a list value at a specified index
 ####Abstract
 Setting the value at a specified list location is another way to interact with hit2assext lists. After successful completion of this statement the length of the list will be left unchanged, and the previous item at the specified location will have been exchanged with the given value.  
