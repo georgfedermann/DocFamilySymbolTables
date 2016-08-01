@@ -164,7 +164,7 @@ public final class RenderSessionManager {
     }
 
     public static Object getScalarVariableValue(String renderSessionContextUuid, String variableName) {
-        logger.info(StringUtils.join("Received call: getScalarVariableValue(", renderSessionContextUuid, ", ", variableName));
+        logger.info(StringUtils.join("Received call: getScalarVariableValue(", renderSessionContextUuid, ", ", variableName, ")"));
         return contextMap.get(renderSessionContextUuid).getScalarVariableValue(variableName);
     }
 
