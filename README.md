@@ -198,22 +198,22 @@ __Nota bene__:
 * There will be exceptions if the specified list does not exist, or if the specified index is out of range for the given list, i.e. if a index is given that exceeds the length of the list.
 * Since HIT/CLOU uses 1-based counting - as opposed to Java's 0-based counting - the 1st item of a hit2assext list has index 1.
 
-###Retrieve a value from a hit2assext list variable
-####Abstract
+### Retrieve a value from a hit2assext list variable
+#### Abstract
 Using this statement you can access the elements of hit2assext lists using an index. Like HIT/CLOU fields, hit2assext use 1-based counting. Thus, the 1st element will have the index 1, the 2nd element the index 2, the nth element will have the index (n), the last element will have the index listLength, where listLength is the number of elements found in the given list. Note: this is different from how you may be used to handle things in C, C++, or Java.
-####Syntax
+#### Syntax
 `hit2assext:getListValueAt( renderSessionUuid, listVariableName, index )`
-####Sample code
+#### Sample code
 Within your _Page Content_ after the creation and before the deletion of your hit2assext render session, add a _Dynamic Content_ element to your _Page Content_ and set its XPath expression to the following value:  
 `hit2assext:getListValueAt(var:read('renderSessionUuid'), 'abraxas', 0)`  
 __Nota bene__:  
 * This statement will retrieve the 1st element from the list __'abraxas'__ available in the render session with the unique id stored in the document variable __'renderSissionUuid'__
 * If the given list has no such element (in this case: if the list is empty) this will yield in a RuntimeException thrown in your render engine!
-* 
-###Query the length of a hit2assext list variable
-####Abstract
+
+### Query the length of a hit2assext list variable
+#### Abstract
 Using this satement you can query the length of a hit2assext list.
-####Sample code
+#### Sample code
 Within your _Page Content_ after the creation and before the deletion of your hit2assext render session, add a _Dynamic Content_ element to your _Page Content_ and set its XPath expression to the following value:  
 `hit2assext:getListLength(var:read('renderSessionuUuid'), 'abraxas')`  
 __Nota bene__:
