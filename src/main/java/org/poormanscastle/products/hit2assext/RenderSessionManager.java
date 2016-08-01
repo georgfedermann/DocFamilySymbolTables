@@ -172,4 +172,17 @@ public final class RenderSessionManager {
         logger.info(StringUtils.join("Received call: printLogStatement(", renderSessionContextUuid, ", ", logMessage));
     }
 
+    /**
+     * Using this method the length of a list that has been registered in the RenderSessionContext
+     * for the given renderSessionContextUuid can be retrieved. The list must have been registered
+     * beforehand using the createList() method.
+     *
+     * @param renderSessionContextUuid
+     * @param listName
+     * @return the length of the list corresponding to the given render session and listName
+     */
+    public static Integer getListLength(String renderSessionContextUuid, String listName) {
+        return contextMap.get(renderSessionContextUuid).getListLength(listName);
+    }
+
 }
