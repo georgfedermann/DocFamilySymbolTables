@@ -182,6 +182,8 @@ public final class RenderSessionManager {
      * @return the length of the list corresponding to the given render session and listName
      */
     public static Integer getListLength(String renderSessionContextUuid, String listName) {
+        logger.info(StringUtils.join("Received call: getListLength('", renderSessionContextUuid, "', '",
+                listName, "')"));
         return contextMap.get(renderSessionContextUuid).getListLength(listName);
     }
 
