@@ -119,6 +119,17 @@ class RenderSessionContextImpl implements RenderSessionContext {
     }
 
     @Override
+    public int getListLength(String listName) {
+        List<?> list = listMap.get(listName);
+        if (list == null) {
+            logger.error(StringUtils.join("Cannot retrieve length for list ", listName, ", no such list was found."));
+            return -1;
+        } else {
+            return list.size();
+        }
+    }
+
+    @Override
     public String toString() {
         return "RenderSessionContextImpl{" +
                 "creationDateTime=" + creationDateTime +

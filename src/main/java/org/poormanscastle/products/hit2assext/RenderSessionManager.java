@@ -154,6 +154,8 @@ public final class RenderSessionManager {
             if (value instanceof List && ((List) value).get(0) instanceof NodeInfo) {
                 value = ((NodeInfo) ((List) value).get(0)).atomize();
                 logger.info(StringUtils.join("Autoconverting the text node to atomic value: ", ((Value) value).getStringValue()));
+            } else if (value instanceof NodeInfo) {
+                value = ((NodeInfo) value).atomize();
             } else {
                 logger.info("No need to convert to atomic value");
             }
@@ -170,6 +172,21 @@ public final class RenderSessionManager {
 
     public static void printLogStatement(String renderSessionContextUuid, String logMessage) {
         logger.info(StringUtils.join("Received call: printLogStatement(", renderSessionContextUuid, ", ", logMessage));
+    }
+
+    /**
+     * Using this method the length of a list that has been registered in the RenderSessionContext
+     * for the given renderSessionContextUuid can be retrieved. The list must have been registered
+     * beforehand using the createList() method.
+     *
+     * @param renderSessionContextUuid
+     * @param listName
+     * @return the length of the list corresponding to the given render session and listName
+     */
+    public static Integer getListLength(String renderSessionContextUuid, String listName) {
+        logger.info(StringUtils.join("Received call: getListLength('", renderSessionContextUuid, "', '",
+                listName, "')"));
+        return contextMap.get(renderSessionContextUuid).getListLength(listName);
     }
 
 }

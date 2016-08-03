@@ -10,7 +10,8 @@ import org.joda.time.DateTime;
  * A RenderSessionContext is created when DocBase starts rendering a document from a deployment package and
  * gets deleted when the rendering of the document is completed.
  * <p>
- * The RenderSessionContext contains all symbols used during rendering, like names of lists.
+ * The RenderSessionContext contains all symbols used during rendering, like names of lists and scalar variables.
+ * Thus, the RenderSessionContext very much resembles a symbol table.
  * <p>
  * Created by georg on 7/14/16.
  */
@@ -84,6 +85,7 @@ public interface RenderSessionContext {
 
     /**
      * this method can be used to retrieve the value of a scalar variable.
+     *
      * @param variableName
      * @return
      */
@@ -93,4 +95,14 @@ public interface RenderSessionContext {
 
     void incrementXmlSequence();
 
+    /**
+     * use this method to retrieve the length of the given list. The list must have been
+     * registered with the context beforehand. If there is no such list, an error statement
+     * will be logged and -1 will be returned.
+     *
+     * @param listName
+     * @return the lenght of the given list or -1 of no such list was registered
+     * with the RenderSessionContext beforehand.
+     */
+    int getListLength(String listName);
 }
