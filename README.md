@@ -1,7 +1,7 @@
-# hit2assext
+# DocFamily symbol tables
 ## Introduction
 
-hit2assext stands for: extension classes for the HIT to Assentis DocFamily transformer project.
+This project uses hook points of Assentis DocFamily to add symbol tables to the rendering environment. Those symbol tables can be used to create and manage scalar and list variables to facilitate translating of templating languages like PHP, Apache velocity, or most prominently HIT/CLOU to Assentis DocFamily workspaces.
 
 This project is an extension to the render engine DocBase of the 
 output management system Assentis DocFamily. It can be used in the stand-alone render engine
@@ -13,8 +13,7 @@ XSLT is a functional language. DocDesign ships with a concept DocumentVariable
 which loosens the stern declarative character of XSLT by introducing writable
 variables.
 
-This project takes the idea a step further by introducing one dimensional variables
-that can be used like lists or fields.
+This project takes the idea a step further by introducing symbol tables that allow the creation and management of scalar and field variables. If there is the demand, type checking and scopes might be added to the project in the future.
 
 The motiviation for this project is to provide support for the hit2ass project,
 which transforms HIT/CLOU text components to Assentis DocFamily Workspaces.  
