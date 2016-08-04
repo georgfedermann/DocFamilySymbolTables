@@ -11,6 +11,9 @@ import java.util.List;
 import java.util.Map;
 import java.util.UUID;
 
+import static com.google.common.base.Preconditions.checkArgument;
+import static com.google.common.base.Preconditions.checkState;
+
 class RenderSessionContextImpl implements RenderSessionContext {
 
     private final static Logger logger = Logger.getLogger(RenderSessionContextImpl.class);
@@ -105,6 +108,19 @@ class RenderSessionContextImpl implements RenderSessionContext {
             return StringUtils.join("hitassext:ERROR: No variable exists for variableName ", variableName);
         } else {
             return value;
+        }
+    }
+
+    @Override
+    public void appendList(String sourceListName, String targetListName) {
+        checkArgument(!StringUtils.isBlank(sourceListName), "sourceListName cannot be empty or null!");
+        checkArgument(!StringUtils.isBlank(targetListName), "targetListName cannot be empty or null!");
+        List sourceList = listMap.get(sourceListName);
+        List targetList = listMap.get(targetListName);
+        checkState(sourceList != null, StringUtils.join("No source list for name ", sourceListName, " can be found!"));
+        checkState(targetList != null, StringUtils.join("No target list for name ", targetListName, " can be found!"));
+        for (Object item : sourceList) {
+            targetList.add(item);
         }
     }
 
