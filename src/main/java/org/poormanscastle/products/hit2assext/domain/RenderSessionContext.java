@@ -105,4 +105,15 @@ public interface RenderSessionContext {
      * with the RenderSessionContext beforehand.
      */
     int getListLength(String listName);
+
+    /**
+     * appends the list items found in the list identified by sourceListName to the end
+     * of the list identified by targetListName. Both lists must have been registered with
+     * the RenderSessionContext before use of this method.
+     *
+     * @param sourceListName
+     * @param targetListName
+     */
+    void appendList(String sourceListName, String targetListName);
+
 }

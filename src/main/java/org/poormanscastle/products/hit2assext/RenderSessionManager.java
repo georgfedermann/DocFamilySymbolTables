@@ -38,7 +38,9 @@ public final class RenderSessionManager {
      * @return
      */
     public static String testConfiguration() {
-        logger.info("Running testConfiguration()");
+        if (logger.isInfoEnabled()) {
+            logger.info("Running testConfiguration()");
+        }
         return "Hello, World!";
     }
 
@@ -53,7 +55,9 @@ public final class RenderSessionManager {
     public static String createRenderSessionContext() {
         RenderSessionContext context = RenderSessionContexts.createDefaultRenderSessionContext();
         contextMap.put(context.getUuid(), context);
-        logger.info(StringUtils.join("Created new RenderSessionContext with uuid ", context.getUuid()));
+        if (logger.isInfoEnabled()) {
+            logger.info(StringUtils.join("Created new RenderSessionContext with uuid ", context.getUuid()));
+        }
         return context.getUuid();
     }
 
@@ -64,7 +68,9 @@ public final class RenderSessionManager {
      * @param uuid
      */
     public static void cleanUpRenderSessionContext(String uuid) {
-        logger.info(StringUtils.join("Cleaning up RenderSessionContext with uuid ", uuid));
+        if (logger.isInfoEnabled()) {
+            logger.info(StringUtils.join("Cleaning up RenderSessionContext with uuid ", uuid));
+        }
         Object foundObject = contextMap.remove(uuid);
         if (foundObject == null) {
             logger.warn(StringUtils.join("No RenderSession for uuid ", uuid, " was found."));
@@ -80,7 +86,9 @@ public final class RenderSessionManager {
      */
     public static void createList(String renderSessionContextUuid, String listName) {
         List<Object> list = new LinkedList<>();
-        logger.info(StringUtils.join("Creating new list with name ", listName, " in RenderSessionContext with uuid ", renderSessionContextUuid, "."));
+        if (logger.isInfoEnabled()) {
+            logger.info(StringUtils.join("Creating new list with name ", listName, " in RenderSessionContext with uuid ", renderSessionContextUuid, "."));
+        }
         contextMap.get(renderSessionContextUuid).addListVariable(listName);
     }
 
@@ -96,7 +104,16 @@ public final class RenderSessionManager {
      */
     public static void addListValue(String renderSessionContextUuid, String listName, Object value) {
         contextMap.get(renderSessionContextUuid).addListValue(listName, value);
-        logger.info(StringUtils.join("Adding value ", value, " to list with name ", listName, " in RenderSessionContext with uuid ", renderSessionContextUuid, "."));
+        if (logger.isInfoEnabled()) {
+            logger.info(StringUtils.join("Adding value ", value, " to list with name ", listName, " in RenderSessionContext with uuid ", renderSessionContextUuid, "."));
+        }
+    }
+
+    public static void appendList(String renderSessionContextUuid, String sourceListName, String targetListName) {
+        if (logger.isInfoEnabled()) {
+            logger.info(StringUtils.join("Append list ", sourceListName, " to the end of ", targetListName, "."));
+        }
+        contextMap.get(renderSessionContextUuid).appendList(sourceListName, targetListName);
     }
 
     /**
@@ -109,10 +126,14 @@ public final class RenderSessionManager {
      * @return
      */
     public static Object getListValueAt(String renderSessionContextUuid, String listName, int index) {
-        logger.info(StringUtils.join("Received call: getListValueAt('", renderSessionContextUuid, "', ",
-                listName, "[", index, "]"));
+        if (logger.isInfoEnabled()) {
+            logger.info(StringUtils.join("Received call: getListValueAt('", renderSessionContextUuid, "', ",
+                    listName, "[", index, "]"));
+        }
         Object value = contextMap.get(renderSessionContextUuid).getListValueAt(listName, index - 1);
-        logger.info(StringUtils.join("Looking up value ", listName, "[", index - 1, "]=", value));
+        if (logger.isInfoEnabled()) {
+            logger.info(StringUtils.join("Looking up value ", listName, "[", index - 1, "]=", value));
+        }
         return value;
     }
 
@@ -126,52 +147,74 @@ public final class RenderSessionManager {
      * @param value
      */
     public static void setListValueAt(String renderSessionContextUuid, String listName, int index, Object value) {
-        logger.info(StringUtils.join("Received call: setListValueAt('", renderSessionContextUuid, "', ",
-                listName, "[", index - 1, "]=", value));
+        if (logger.isInfoEnabled()) {
+            logger.info(StringUtils.join("Received call: setListValueAt('", renderSessionContextUuid, "', ",
+                    listName, "[", index - 1, "]=", value));
+        }
         Object oldValue = contextMap.get(renderSessionContextUuid).setListValueAt(listName, index - 1, value);
-        logger.info(StringUtils.join("Replacing ", listName, "[", index - 1, "]=", oldValue, " with newValue ", value));
+        if (logger.isInfoEnabled()) {
+            logger.info(StringUtils.join("Replacing ", listName, "[", index - 1, "]=", oldValue, " with newValue ", value));
+        }
     }
 
     public static int getXmlSequence(String renderSessionContextUuid) {
         int val = contextMap.get(renderSessionContextUuid).getXmlSequence();
-        logger.info(StringUtils.join("Received call: getXmlSequence('", renderSessionContextUuid, "')=", val));
+        if (logger.isInfoEnabled()) {
+            logger.info(StringUtils.join("Received call: getXmlSequence('", renderSessionContextUuid, "')=", val));
+        }
         return val;
     }
 
     public static void incrementXmlSequence(String renderSessionContextUuid) {
-        logger.info(StringUtils.join("Received call: incrementXmlSequence('", renderSessionContextUuid, "')"));
+        if (logger.isInfoEnabled()) {
+            logger.info(StringUtils.join("Received call: incrementXmlSequence('", renderSessionContextUuid, "')"));
+        }
         contextMap.get(renderSessionContextUuid).incrementXmlSequence();
     }
 
     public static void createScalarVariable(String renderSessionContextUuid, String variableName, Object value) {
-        logger.info(StringUtils.join("Creating new scalar variable with name ", variableName, " in RenderSessionContext with uuid ", renderSessionContextUuid, ". Delegating to RenderSessionManager.setScalarVariable()"));
+        if (logger.isInfoEnabled()) {
+            logger.info(StringUtils.join("Creating new scalar variable with name ", variableName, " in RenderSessionContext with uuid ", renderSessionContextUuid, ". Delegating to RenderSessionManager.setScalarVariable()"));
+        }
         RenderSessionManager.setScalarVariableValue(renderSessionContextUuid, variableName, value);
     }
 
     public static void setScalarVariableValue(String renderSessionContextUuid, String variableName, Object value) {
-        logger.info(StringUtils.join("Received call: setScalarVariableValue(", renderSessionContextUuid, ", ", variableName, ", ", value, ")"));
+        if (logger.isInfoEnabled()) {
+            logger.info(StringUtils.join("Received call: setScalarVariableValue(", renderSessionContextUuid, ", ", variableName, ", ", value, ")"));
+        }
         try {
             if (value instanceof List && ((List) value).get(0) instanceof NodeInfo) {
                 value = ((NodeInfo) ((List) value).get(0)).atomize();
-                logger.info(StringUtils.join("Autoconverting the text node to atomic value: ", ((Value) value).getStringValue()));
+                if (logger.isInfoEnabled()) {
+                    logger.info(StringUtils.join("Autoconverting the text node to atomic value: ", ((Value) value).getStringValue()));
+                }
             } else if (value instanceof NodeInfo) {
                 value = ((NodeInfo) value).atomize();
             } else {
-                logger.info("No need to convert to atomic value");
+                if (logger.isInfoEnabled()) {
+                    logger.info("No need to convert to atomic value");
+                }
             }
         } catch (XPathException e) {
-            logger.error("Could not transform saxon node type to saxon value type.");
+            if (logger.isInfoEnabled()) {
+                logger.error("Could not transform saxon node type to saxon value type.");
+            }
         }
         contextMap.get(renderSessionContextUuid).setScalarVariableValue(variableName, value);
     }
 
     public static Object getScalarVariableValue(String renderSessionContextUuid, String variableName) {
-        logger.info(StringUtils.join("Received call: getScalarVariableValue(", renderSessionContextUuid, ", ", variableName, ")"));
+        if (logger.isInfoEnabled()) {
+            logger.info(StringUtils.join("Received call: getScalarVariableValue(", renderSessionContextUuid, ", ", variableName, ")"));
+        }
         return contextMap.get(renderSessionContextUuid).getScalarVariableValue(variableName);
     }
 
     public static void printLogStatement(String renderSessionContextUuid, String logMessage) {
-        logger.info(StringUtils.join("Received call: printLogStatement(", renderSessionContextUuid, ", ", logMessage));
+        if (logger.isInfoEnabled()) {
+            logger.info(StringUtils.join("Received call: printLogStatement(", renderSessionContextUuid, ", ", logMessage));
+        }
     }
 
     /**
@@ -184,8 +227,10 @@ public final class RenderSessionManager {
      * @return the length of the list corresponding to the given render session and listName
      */
     public static Integer getListLength(String renderSessionContextUuid, String listName) {
-        logger.info(StringUtils.join("Received call: getListLength('", renderSessionContextUuid, "', '",
-                listName, "')"));
+        if (logger.isInfoEnabled()) {
+            logger.info(StringUtils.join("Received call: getListLength('", renderSessionContextUuid, "', '",
+                    listName, "')"));
+        }
         return contextMap.get(renderSessionContextUuid).getListLength(listName);
     }
 
