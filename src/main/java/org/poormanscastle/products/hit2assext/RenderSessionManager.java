@@ -237,4 +237,18 @@ public final class RenderSessionManager {
         return contextMap.get(renderSessionContextUuid).getListLength(listName);
     }
 
+    /**
+     * Using this method the template composer can reach into the Java runtime of the render engine
+     * and query for the Java system properties.
+     *
+     * @param systemPropertyName
+     * @return
+     */
+    public static String getSystemProperty(String systemPropertyName) {
+        if (logger.isInfoEnabled()) {
+            logger.info(StringUtils.join("Received call: getSystemProperty('", systemPropertyName, "')"));
+        }
+        return System.getProperty(systemPropertyName);
+    }
+
 }
