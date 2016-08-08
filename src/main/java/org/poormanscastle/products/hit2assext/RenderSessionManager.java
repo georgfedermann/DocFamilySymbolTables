@@ -187,10 +187,13 @@ public final class RenderSessionManager {
             if (value instanceof List && ((List) value).get(0) instanceof NodeInfo) {
                 value = ((NodeInfo) ((List) value).get(0)).atomize();
                 if (logger.isInfoEnabled()) {
-                    logger.info(StringUtils.join("Autoconverting the text node to atomic value: ", ((Value) value).getStringValue()));
+                    logger.info(StringUtils.join("Autoconverting the 1st element of List<NodeInfo> to atomic value: ", ((Value) value).getStringValue()));
                 }
             } else if (value instanceof NodeInfo) {
                 value = ((NodeInfo) value).atomize();
+                if (logger.isInfoEnabled()) {
+                    logger.info(StringUtils.join("Autoconverting the NodeInfo to atomic value: ", ((Value) value).getStringValue()));
+                }
             } else {
                 if (logger.isInfoEnabled()) {
                     logger.info("No need to convert to atomic value");
