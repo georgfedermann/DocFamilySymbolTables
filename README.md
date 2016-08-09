@@ -1,7 +1,7 @@
-# hit2assext
+# DocFamily symbol tables
 ## Introduction
 
-hit2assext stands for: extension classes for the HIT to Assentis DocFamily transformer project.
+This project uses hook points of Assentis DocFamily to add symbol tables to the rendering environment. Those symbol tables can be used to create and manage scalar and list variables to facilitate translating of templating languages like PHP, Apache velocity, or most prominently HIT/CLOU to Assentis DocFamily workspaces.
 
 This project is an extension to the render engine DocBase of the 
 output management system Assentis DocFamily. It can be used in the stand-alone render engine
@@ -13,17 +13,16 @@ XSLT is a functional language. DocDesign ships with a concept DocumentVariable
 which loosens the stern declarative character of XSLT by introducing writable
 variables.
 
-This project takes the idea a step further by introducing one dimensional variables
-that can be used like lists or fields.
+This project takes the idea a step further by introducing symbol tables that allow the creation and management of scalar and field variables. If there is the demand, type checking and scopes might be added to the project in the future.
 
 The motiviation for this project is to provide support for the hit2ass project,
-which transforms HIT/CLOU text components to Assentis DocFamily Workspaces.  
-Hit/CLOU used an imperative language making a transformation to declarative
-XSLT demanding. DocFamily offers great support by shipping with aforementioned
+which implements a compiler which transforms HIT/CLOU text components to Assentis DocFamily Workspaces.  
+Hit/CLOU uses an imperative language making a transformation to declarative
+XSLT demanding, to say the least. DocFamily offers great support by shipping with aforementioned
 document variables. But there're still uncovered grounds:
 * lists / fields
-* tables
 * while loops
+* for loops
 
 This project adds limited support for imperative structures like for loops and
 while loops. While the support was quite limited in the beginnings of this project,
@@ -105,7 +104,7 @@ __Nota bene__:
 * The variable `renderSessionUuid` will now hold the unique id of the newly created render session. You can use the id to refer to the render session, as shown below.
 
 ### Cleanup render session
-####Abstract
+#### Abstract
 When the render process for the given document (! - not batch process!) has completed (successfully or erroneous), it's mandatory to clean up the render session to avoid a memory leak.
 ####Sample code
 In DocDesign, add a new _Dynamic Content_ element at the very end of your _Page Content_.  
@@ -116,8 +115,8 @@ __Nota bene:__
 * After the clean up of the session context, the session context will not be available any more. Any attempt to access the render session or the content of its symbol table after clean up will potentially and probably lead to erroneous behavior, error logs and rendering malfunctions.
 * The syntax `var:read('renderSessionUuid')` uses the standard _DocDesign_ _Document Variable_ mechanism which is available using the namespace `var`. `'renderSessionUuid'` again is the name of the variable we have chosen when creating the render session in the previous section.
  
-###Test configuration
-####Abstract
+### Test configuration
+####A bstract
 To perform a quick smoke test of your hit2assext configuration you can add a _Dynamic Element_ to your _DocDesign_ workspace as quoted below. If everything works it will print the text __'Hello, World!'__.
 #### Sample code
 Somewhere in your _Page Content_ between the creation and deletion of your render session, add a _Dynamic Content_ element to your _Page Content_ and set its XPath expression to the following value:  
@@ -128,10 +127,10 @@ __Nota bene:__
  * Check if you registered the hit2assext namespace with your DocDesign Document's namespaces
  * Check the hit2assext logs in your log files, including the DocDesign desktop server logs
 
-###Create a new scalar variable
-####Abstract
+### Create a new scalar variable
+#### Abstract
 A scalar variable is a symbol that can store one mutable value. The mechanism accepts scalar values like String, Integer, Boolean, etc. that are stored as Objects. The mechanism also accepts wrapper types as used by the Saxon XSLT processor, by testing for a List<net.sf.saxon.om.NodeInfo> and using the methode NodeInfo.atomize() to store saxon values as net.sf.saxon.value.Value.
-####Sample code
+#### Sample code
 Within your _Page Content_ between the creation and deletion of your render session, add a _Dynamic Content_ element to your _Page Content_ and set its XPath expression to the following value:  
 `hit2assext:createScalarVariable(var:read('renderSessionUuid'), 'varName', value)`  
 __Nota bene__:
@@ -139,10 +138,10 @@ __Nota bene__:
 * You have to create a scalar variable before you read it, or the system will crash. If you write a scalar variable without creating it beforehand, the system will gracefully create it for you and then write the value to it.
 * The argument __value__ is an XPath expression that will be evaluated by the XSL processor (Saxon in case of the DocFamily) before being handed over to the hit2assext classes.
 
-###Write a value to a scalar variable
-####Abstract
+### Write a value to a scalar variable
+#### Abstract
 Using this mechanism you can store values to mutable variables in the context of DocFamily DocDesign workspaces, thus breaking the XSL concept of immutability, idempotency, etc.
-####Sample code
+#### Sample code
 Within your _Page Content_ between the creation and deletion of your render session, add a _Dynamic Content_ element to your _Page Content_ and set its XPath expression to the following value:  
 `hit2assext:setScalarVariableValue(var:read('renderSessionUuid'), 'lelement', XPathExpression)`  
 __Nota bene__:
@@ -157,40 +156,40 @@ To use the hit2assext XML mapping mechanism to write the value of the next data 
 __Nota bene__:
 * The XPath OR operator is used as a vehicle here to evaluate two different XPath expressions in one step. The first expression retrieves the a value from the DocFamily userData XML, while the second expression increments the XML pointer so the system knows which line to read next.
 
-###Read a value from a scalar variable
-####Abstract
+### Read a value from a scalar variable
+#### Abstract
 A scalar variable can only be read after it has been created, either by explicit creation of the symbol in the hit2assext render session, or by implicit creation by writing a value to a hit2assext scalar variable.
-####Sample code
+#### Sample code
 Within your _Page Content_ between the creation and deletion of your render session, add a _Dynamic Content_ element to your _Page Content_ and set its XPath expression to the following value:  
 `hit2assext:getScalarVariableValue(var:read('renderSessionUuid'), 'lelement')`  
 
-###Create a new list variable
-####Abstract
+### Create a new list variable
+#### Abstract
 The main merit of the hit2assext system is the introduction of list variables into DocDesign. This sections shows how to create a new list variable and register it with the hit2assext render session context.
-####Sample code
+#### Sample code
 Within your _Page Content_ between the creation and deletion of your render session, add a _Dynamic Content_ element to your _Page Content_ and set its XPath expression to the following value:  
 `hit2assext:createList(var:read('renderSessionUuid'), 'abraxas')`  
 __Nota bene__:
 * This statement will create a new list named __abraxas__ inside the render session referenced by its unique id as stored in the _DocDesign_ _document variable_ __`'renderSessionUuid'`__.
 
-###Add a value to the end of a hit2assext list
-####Abstract
+### Add a value to the end of a hit2assext list
+#### Abstract
 Adding a value to the end of a list is one way to interact with hit2assext lists. After successful completion of this statement the length of the list will have increased by one, and the last item in the list will be the value added using this statement.
-####Syntax
+#### Syntax
 `hit2assext:addListValue( renderSessionUuid, listVariableName, newValue )`
-####Sample code
+#### Sample code
 Within your _Page Content_ after the creation and before the deletion of your render session, add a _Dynamic Content_ element to your _Page Content_ and set its XPath expression to the following value:  
 `hit2assext:addListValue(var:read('renderSessionUuid'), 'abraxas', 'John')`  
 __Nota bene__:  
 * This statement adds the value __'John'__ to the end of the list __'abraxas'__ available in the render session identified by the unique id as stored in the _DocDesign_ _Document variable_ __'renderSessionUuid'__.
 * Please note the recurring idiom of using `var:read('renderSessionUuid')` to refer to the unique id of the render session.
 
-###Set a list value at a specified index
-####Abstract
+### Set a list value at a specified index
+#### Abstract
 Setting the value at a specified list location is another way to interact with hit2assext lists. After successful completion of this statement the length of the list will be left unchanged, and the previous item at the specified location will have been exchanged with the given value.  
-####Syntax
+#### Syntax
 `hit2assext:setListValueAt( renderSessionUuid, listVariableName, index, newValue )`
-####Sample code
+#### Sample code
 Within your _Page Content_ after the creation and before the deletion of your render session, add a _Dynamic Content_ element to your _Page Content_ and set its XPath expression to the following value:  
 `hit2assext:setListValueAt(var:read('renderSessionUuid'), 'abraxas', 3, 'John')`  
 __Nota bene__:  
@@ -227,9 +226,9 @@ Please note: the hit2assext system does some helpful logging on the INFO level. 
 `log4j.logger.org.poormanscastle=DEBUG`
 
 ## Sample Application
-###Abstract
+### Abstract
 This section gives a sample application of the hit2assext project in the context of the hit2ass project. On the one hand this gives a motiviation for "Why is there a hit2assext project" and on the other hand shows how to use the hit2assext project in practice.
-###Motivation
+### Motivation
 This hit2ass project needs to map imperative concepts like scalar variables, list variables, FOR loops and WHILE loops to Assentis DocDesign Workspaces.  
 In this context, FOR loops are iterative structures that apply a given logic to a predefined set of elements.  
 In this context, WHILE loops are iterative structures that apply a given logic to a predefined set of elements until a given condition fails.  

@@ -208,10 +208,12 @@ public final class RenderSessionManager {
     }
 
     public static Object getScalarVariableValue(String renderSessionContextUuid, String variableName) {
+        Object value = contextMap.get(renderSessionContextUuid).getScalarVariableValue(variableName);
         if (logger.isInfoEnabled()) {
-            logger.info(StringUtils.join("Received call: getScalarVariableValue(", renderSessionContextUuid, ", ", variableName, ")"));
+            logger.info(StringUtils.join("Received call: getScalarVariableValue(", renderSessionContextUuid, ", ",
+                    variableName, ")->", value.toString()));
         }
-        return contextMap.get(renderSessionContextUuid).getScalarVariableValue(variableName);
+        return value;
     }
 
     public static void printLogStatement(String renderSessionContextUuid, String logMessage) {
@@ -230,11 +232,12 @@ public final class RenderSessionManager {
      * @return the length of the list corresponding to the given render session and listName
      */
     public static Integer getListLength(String renderSessionContextUuid, String listName) {
+        Integer length = contextMap.get(renderSessionContextUuid).getListLength(listName);
         if (logger.isInfoEnabled()) {
             logger.info(StringUtils.join("Received call: getListLength('", renderSessionContextUuid, "', '",
-                    listName, "')"));
+                    listName, "')->", length));
         }
-        return contextMap.get(renderSessionContextUuid).getListLength(listName);
+        return length;
     }
 
     /**
