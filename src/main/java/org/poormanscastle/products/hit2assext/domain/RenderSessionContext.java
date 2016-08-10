@@ -101,7 +101,7 @@ public interface RenderSessionContext {
      */
     int getLastQueriedXmlSequence();
 
-    void incrementXmlSequence();
+    int incrementXmlSequence();
 
     /**
      * use this method to retrieve the length of the given list. The list must have been

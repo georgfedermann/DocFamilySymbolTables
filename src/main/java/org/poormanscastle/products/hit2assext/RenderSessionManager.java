@@ -167,10 +167,12 @@ public final class RenderSessionManager {
     }
 
     public static void incrementXmlSequence(String renderSessionContextUuid) {
+        int oldXmlSequence = contextMap.get(renderSessionContextUuid).getXmlSequence();
+        int newXmlSequence = contextMap.get(renderSessionContextUuid).incrementXmlSequence();
         if (logger.isInfoEnabled()) {
-            logger.info(StringUtils.join("Received call: incrementXmlSequence('", renderSessionContextUuid, "')"));
+            logger.info(StringUtils.join("Received call: incrementXmlSequence('", renderSessionContextUuid, "') ",
+                    oldXmlSequence, "->", newXmlSequence));
         }
-        contextMap.get(renderSessionContextUuid).incrementXmlSequence();
     }
 
     public static void createScalarVariable(String renderSessionContextUuid, String variableName, Object value) {
@@ -183,6 +185,11 @@ public final class RenderSessionManager {
     public static void setScalarVariableValue(String renderSessionContextUuid, String variableName, Object value) {
         if (logger.isInfoEnabled()) {
             logger.info(StringUtils.join("Received call: setScalarVariableValue(", renderSessionContextUuid, ", ", variableName, ", ", value, ")"));
+        }
+        // check that arguement is not an empty list
+        if (value instanceof List && ((List) value).size() == 0) {
+            throw new IllegalArgumentException(StringUtils.join("hit2assext:ERROR setScalarVariable('", renderSessionContextUuid, "', '",
+                    variableName, "', value) received empty List. Maybe the line with the given number is missing in the user data XML? "));
         }
         try {
             if (value instanceof List && ((List) value).get(0) instanceof NodeInfo) {
