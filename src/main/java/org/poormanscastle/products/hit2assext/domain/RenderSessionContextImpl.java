@@ -137,8 +137,8 @@ class RenderSessionContextImpl implements RenderSessionContext {
     }
 
     @Override
-    synchronized public void incrementXmlSequence() {
-        xmlSequence++;
+    synchronized public int incrementXmlSequence() {
+        return ++xmlSequence;
     }
 
     @Override

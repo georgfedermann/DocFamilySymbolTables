@@ -168,9 +168,8 @@ public final class RenderSessionManager {
 
     public static void incrementXmlSequence(String renderSessionContextUuid) {
         int oldXmlSequence = contextMap.get(renderSessionContextUuid).getXmlSequence();
-        contextMap.get(renderSessionContextUuid).incrementXmlSequence();
+        int newXmlSequence = contextMap.get(renderSessionContextUuid).incrementXmlSequence();
         if (logger.isInfoEnabled()) {
-            int newXmlSequence = contextMap.get(renderSessionContextUuid).getXmlSequence();
             logger.info(StringUtils.join("Received call: incrementXmlSequence('", renderSessionContextUuid, "') ",
                     oldXmlSequence, "->", newXmlSequence));
         }
