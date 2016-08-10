@@ -24,6 +24,8 @@ class RenderSessionContextImpl implements RenderSessionContext {
 
     private int xmlSequence = 1;
 
+    private int lastQueriedXmlSequence;
+
     /**
      * remember when this session item was created. If the clean up does not work for some reason
      * old sessions can be identified as obsolete by their age (e.g. older than 20s) and be
@@ -126,7 +128,12 @@ class RenderSessionContextImpl implements RenderSessionContext {
 
     @Override
     synchronized public int getXmlSequence() {
-        return xmlSequence;
+        return lastQueriedXmlSequence = xmlSequence;
+    }
+
+    @Override
+    public int getLastQueriedXmlSequence() {
+        return lastQueriedXmlSequence;
     }
 
     @Override

@@ -158,9 +158,10 @@ public final class RenderSessionManager {
     }
 
     public static int getXmlSequence(String renderSessionContextUuid) {
+        int lastQueriedXmlSequence = contextMap.get(renderSessionContextUuid).getLastQueriedXmlSequence();
         int val = contextMap.get(renderSessionContextUuid).getXmlSequence();
-        if (logger.isInfoEnabled()) {
-            logger.info(StringUtils.join("Received call: getXmlSequence('", renderSessionContextUuid, "')=", val));
+        if (logger.isInfoEnabled() && lastQueriedXmlSequence != val) {
+            logger.info(StringUtils.join("Received (potentially multiple) call: getXmlSequence('", renderSessionContextUuid, "')=", val));
         }
         return val;
     }
