@@ -93,6 +93,14 @@ public interface RenderSessionContext {
 
     int getXmlSequence();
 
+    /**
+     * Convenience method. Since the rendering XSL transformer will query the XmlSequence repeatedly and a lot,
+     * this method can be used to e.g. reduce the load of logging statements.
+     *
+     * @return
+     */
+    int getLastQueriedXmlSequence();
+
     void incrementXmlSequence();
 
     /**
