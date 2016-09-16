@@ -1,28 +1,29 @@
 package org.poormanscastle.products.hit2assext;
 
-import net.sf.saxon.om.NodeInfo;
-import net.sf.saxon.trans.XPathException;
-import net.sf.saxon.value.Value;
-import org.apache.commons.lang3.StringUtils;
-import org.apache.log4j.Logger;
-import org.poormanscastle.products.hit2assext.domain.RenderSessionContext;
-import org.poormanscastle.products.hit2assext.domain.RenderSessionContexts;
+import static com.google.common.base.Preconditions.checkArgument;
+import static com.google.common.base.Preconditions.checkNotNull;
 
 import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 
+import org.apache.commons.lang3.StringUtils;
+import org.apache.log4j.Logger;
+import org.poormanscastle.products.hit2assext.domain.RenderSessionContext;
+import org.poormanscastle.products.hit2assext.domain.RenderSessionContexts;
+
+import net.sf.saxon.om.NodeInfo;
+import net.sf.saxon.trans.XPathException;
+import net.sf.saxon.value.Value;
+
 /**
  * A RenderSessionManager manages the RenderSessionContext instances.
- * <p>
  * There exists exactly one RenderSessionManager within application scope. The application is the render
  * engine, i.e. the DocBase instance doing the rendering. E.g. the DocDesign desktop server or the
  * DocBase engine running somewhere as a service.
- * <p>
  * The DocFamily extension mechanism requires the methods of extension classes to be static.
  * Therefore the RenderSessionManager implements no interface.
- * <p>
  * Created by georg on 7/15/16.
  */
 public final class RenderSessionManager {
@@ -32,10 +33,34 @@ public final class RenderSessionManager {
     private final static Map<String, RenderSessionContext> contextMap = new HashMap<>();
 
     /**
+     * Implements the HIT/CLOU substring feature.
+     * The substring can be defined by using a bracket notation: Let myVar="Hello, World!".
+     * Then, myVar[1,5] is "Hello". HIT/CLOU used one based counting: The first character
+     * has index 1. The index of the last character is equal to the length of the string.
+     * The length of a substring, thus, is ( endIndex - startIndex + 1 ).
+     *
+     * @param inputString string from which a substring shall be extracted
+     * @param startIndex start substringing here
+     * @param endIndex stop substringing here
+     * @return the resulting substring
+     */
+    public static String getSubstring(String inputString, int startIndex, int endIndex) {
+        checkNotNull(inputString, "Input to getSubstring() was null.");
+        checkArgument(startIndex >= 00 && endIndex >= 0x0, StringUtils.join("startIndex ", startIndex,
+                " and endIndex ", endIndex, " must both be positive numbers."));
+        checkArgument(startIndex <= endIndex, StringUtils.join("startIndex ", startIndex,
+                " must be smaller or equal to endIndex ", endIndex));
+        checkArgument(endIndex <= inputString.length(), "endIndex ", endIndex,
+                " cannot be greated then input string length ", inputString.length());
+
+        return inputString.substring(startIndex - 1, endIndex);
+    }
+
+    /**
      * This method can be used to test the configuration.
      * It returns the text "Hello, World!".
      *
-     * @return
+     * @return the string "Hello, World!" without the quotes.
      */
     public static String testConfiguration() {
         if (logger.isInfoEnabled()) {
@@ -46,11 +71,10 @@ public final class RenderSessionManager {
 
     /**
      * create a new RenderSessionContext and register it with the RenderSessionManager.
-     * <p>
      * This method is intended to be called during render time by the render engine, e.g.
      * DocDesign's desktop server, or a productive DocBase service, etc.
      *
-     * @return
+     * @return a new RenderSessionContext instance.
      */
     public static String createRenderSessionContext() {
         RenderSessionContext context = RenderSessionContexts.createDefaultRenderSessionContext();
@@ -63,9 +87,11 @@ public final class RenderSessionManager {
 
     /**
      * Using this method, the render engine can signal the RenderSessionManager that
-     * the render session is not needed any more.
+     * the render session is not needed any more. Use this at the end of a DocBase
+     * render session or else we have a memory leak. 
+     * TODO you could implement a garbage collector that discards RenderSession older than 5 seconds to avoid memory leaks.
      *
-     * @param uuid
+     * @param uuid the unique of the render session which shall be discarded.
      */
     public static void cleanUpRenderSessionContext(String uuid) {
         if (logger.isInfoEnabled()) {
@@ -81,8 +107,8 @@ public final class RenderSessionManager {
      * creates a new, empty list object. a list is a symbol that can hold several values
      * which can be addressed using the name of the variable and an index given in brackets [].
      *
-     * @param renderSessionContextUuid
-     * @param listName
+     * @param renderSessionContextUuid the render session that will be the scope of the new list
+     * @param listName the name of the new list
      */
     public static void createList(String renderSessionContextUuid, String listName) {
         List<Object> list = new LinkedList<>();
@@ -98,9 +124,9 @@ public final class RenderSessionManager {
      * Nota bene: before adding values to a list, the list must have been created
      * using method addListVariable(String) beforehand.
      *
-     * @param renderSessionContextUuid
-     * @param listName
-     * @param value
+     * @param renderSessionContextUuid the render session in which this list exists
+     * @param listName the name of the list
+     * @param value the new value to be added to the list
      */
     public static void addListValue(String renderSessionContextUuid, String listName, Object value) {
         contextMap.get(renderSessionContextUuid).addListValue(listName, value);
@@ -120,10 +146,10 @@ public final class RenderSessionManager {
      * this method can be used to retrieve the value at the specified index from
      * the list referenced by the given name.
      *
-     * @param renderSessionContextUuid
-     * @param listName
-     * @param index
-     * @return
+     * @param renderSessionContextUuid the render session in which the given list exists
+     * @param listName the name of the list
+     * @param index the index of the value of interest
+     * @return the value of interest
      */
     public static Object getListValueAt(String renderSessionContextUuid, String listName, int index) {
         if (logger.isInfoEnabled()) {
@@ -141,10 +167,10 @@ public final class RenderSessionManager {
      * this method can be used to set the list item at the specified index. The previous
      * item at this index will be replaced with the specified value.
      *
-     * @param renderSessionContextUuid
-     * @param listName
-     * @param index
-     * @param value
+     * @param renderSessionContextUuid the render session in which the given list exists
+     * @param listName the name of the list
+     * @param index the index of the list that shall be set to the new value
+     * @param value the new value that shall be stored in the given list
      */
     public static void setListValueAt(String renderSessionContextUuid, String listName, int index, Object value) {
         if (logger.isInfoEnabled()) {
@@ -235,8 +261,8 @@ public final class RenderSessionManager {
      * for the given renderSessionContextUuid can be retrieved. The list must have been registered
      * beforehand using the createList() method.
      *
-     * @param renderSessionContextUuid
-     * @param listName
+     * @param renderSessionContextUuid the render session in which the given list exists
+     * @param listName the name of the list
      * @return the length of the list corresponding to the given render session and listName
      */
     public static Integer getListLength(String renderSessionContextUuid, String listName) {
@@ -252,8 +278,8 @@ public final class RenderSessionManager {
      * Using this method the template composer can reach into the Java runtime of the render engine
      * and query for the Java system properties.
      *
-     * @param systemPropertyName
-     * @return
+     * @param systemPropertyName the name of the system property of interest
+     * @return the value of the given system property
      */
     public static String getSystemProperty(String systemPropertyName) {
         if (logger.isInfoEnabled()) {
