@@ -1,13 +1,39 @@
 package org.poormanscastle.products.hit2assext;
 
-import org.junit.Test;
-
 import static org.junit.Assert.assertEquals;
+
+import org.junit.Rule;
+import org.junit.Test;
+import org.junit.rules.ExpectedException;
 
 /**
  * Created by georg on 8/10/16.
  */
 public class RenderSessionManagerTest {
+
+    @Rule
+    public final ExpectedException exception = ExpectedException.none();
+
+    @Test
+    public void getSubstringValid() throws Exception {
+        String testString = "Hello, World!";
+        assertEquals("Hello", RenderSessionManager.getSubstring(testString, 1, 5));
+        assertEquals("World!", RenderSessionManager.getSubstring(testString, 8, 13));
+    }
+
+    @Test
+    public void getSubStringIndex0() throws Exception {
+        String testString = "Hello, World!";
+        exception.expect(IllegalArgumentException.class);
+        RenderSessionManager.getSubstring(testString, 0, 4);
+    }
+    
+    @Test
+    public void getSubStringStartIndexGreaterThanEndIndex() throws Exception{
+        String testString = "Hello, World!";
+        exception.expect(IllegalArgumentException.class);
+        RenderSessionManager.getSubstring(testString, 5, 1);
+    }
 
     @Test
     public void getXmlSequence() throws Exception {
