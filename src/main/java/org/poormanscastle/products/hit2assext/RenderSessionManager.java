@@ -40,13 +40,13 @@ public final class RenderSessionManager {
      * The length of a substring, thus, is ( endIndex - startIndex + 1 ).
      *
      * @param inputString string from which a substring shall be extracted
-     * @param startIndex start substringing here
-     * @param endIndex stop substringing here
+     * @param startIndex  start substringing here
+     * @param endIndex    stop substringing here
      * @return the resulting substring
      */
     public static String getSubstring(String inputString, int startIndex, int endIndex) {
         checkNotNull(inputString, "Input to getSubstring() was null.");
-        checkArgument(startIndex >= 00 && endIndex >= 0x0, StringUtils.join("startIndex ", startIndex,
+        checkArgument(startIndex > 00 && endIndex > 0x0, StringUtils.join("startIndex ", startIndex,
                 " and endIndex ", endIndex, " must both be positive numbers."));
         checkArgument(startIndex <= endIndex, StringUtils.join("startIndex ", startIndex,
                 " must be smaller or equal to endIndex ", endIndex));
@@ -88,7 +88,7 @@ public final class RenderSessionManager {
     /**
      * Using this method, the render engine can signal the RenderSessionManager that
      * the render session is not needed any more. Use this at the end of a DocBase
-     * render session or else we have a memory leak. 
+     * render session or else we have a memory leak.
      * TODO you could implement a garbage collector that discards RenderSession older than 5 seconds to avoid memory leaks.
      *
      * @param uuid the unique of the render session which shall be discarded.
@@ -108,7 +108,7 @@ public final class RenderSessionManager {
      * which can be addressed using the name of the variable and an index given in brackets [].
      *
      * @param renderSessionContextUuid the render session that will be the scope of the new list
-     * @param listName the name of the new list
+     * @param listName                 the name of the new list
      */
     public static void createList(String renderSessionContextUuid, String listName) {
         List<Object> list = new LinkedList<>();
@@ -125,8 +125,8 @@ public final class RenderSessionManager {
      * using method addListVariable(String) beforehand.
      *
      * @param renderSessionContextUuid the render session in which this list exists
-     * @param listName the name of the list
-     * @param value the new value to be added to the list
+     * @param listName                 the name of the list
+     * @param value                    the new value to be added to the list
      */
     public static void addListValue(String renderSessionContextUuid, String listName, Object value) {
         contextMap.get(renderSessionContextUuid).addListValue(listName, value);
@@ -147,8 +147,8 @@ public final class RenderSessionManager {
      * the list referenced by the given name.
      *
      * @param renderSessionContextUuid the render session in which the given list exists
-     * @param listName the name of the list
-     * @param index the index of the value of interest
+     * @param listName                 the name of the list
+     * @param index                    the index of the value of interest
      * @return the value of interest
      */
     public static Object getListValueAt(String renderSessionContextUuid, String listName, int index) {
@@ -168,9 +168,9 @@ public final class RenderSessionManager {
      * item at this index will be replaced with the specified value.
      *
      * @param renderSessionContextUuid the render session in which the given list exists
-     * @param listName the name of the list
-     * @param index the index of the list that shall be set to the new value
-     * @param value the new value that shall be stored in the given list
+     * @param listName                 the name of the list
+     * @param index                    the index of the list that shall be set to the new value
+     * @param value                    the new value that shall be stored in the given list
      */
     public static void setListValueAt(String renderSessionContextUuid, String listName, int index, Object value) {
         if (logger.isInfoEnabled()) {
@@ -262,7 +262,7 @@ public final class RenderSessionManager {
      * beforehand using the createList() method.
      *
      * @param renderSessionContextUuid the render session in which the given list exists
-     * @param listName the name of the list
+     * @param listName                 the name of the list
      * @return the length of the list corresponding to the given render session and listName
      */
     public static Integer getListLength(String renderSessionContextUuid, String listName) {
