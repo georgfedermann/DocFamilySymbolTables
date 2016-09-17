@@ -4,7 +4,7 @@
 
     <groupId>org.poormanscastle.products</groupId>
     <artifactId>hit2assext</artifactId>
-    <version>0.0.2-SNAPSHOT</version>
+    <version>0.0.2</version>
     <packaging>jar</packaging>
 
     <name>hit2assext</name>
@@ -125,7 +125,7 @@
     <scm>
         <connection>scm:git:https://github.com/georgfedermann/DocFamilySymbolTables.git</connection>
         <url>https://github.com/georgfedermann/DocFamilySymbolTables</url>
-      <tag>HEAD</tag>
+      <tag>hit2assext-0.0.2</tag>
   </scm>
     <developers>
         <developer>
