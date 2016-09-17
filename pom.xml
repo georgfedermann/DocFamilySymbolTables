@@ -1,12 +1,10 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<project xmlns="http://maven.apache.org/POM/4.0.0"
-         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
 
     <groupId>org.poormanscastle.products</groupId>
     <artifactId>hit2assext</artifactId>
-    <version>0.0.1-SNAPSHOT</version>
+    <version>0.0.2-SNAPSHOT</version>
     <packaging>jar</packaging>
 
     <name>hit2assext</name>
@@ -52,6 +50,12 @@
         </dependency>
         <dependency>
             <groupId>net.sf.saxon</groupId>
+            <artifactId>saxon</artifactId>
+            <version>${version.saxon}</version>
+            <scope>compile</scope>
+        </dependency>
+        <dependency>
+            <groupId>net.sf.saxon</groupId>
             <artifactId>saxon-xpath</artifactId>
             <version>${version.saxon}</version>
             <scope>compile</scope>
@@ -66,6 +70,11 @@
     <build>
         <finalName>HitAssExtensions</finalName>
         <plugins>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-release-plugin</artifactId>
+                <version>2.5.1</version>
+            </plugin>
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-compiler-plugin</artifactId>
@@ -103,6 +112,21 @@
             </plugin>
         </plugins>
     </build>
+    <distributionManagement>
+        <repository>
+            <id>myNexus</id>
+            <url>http://dev.federmann.co.at:37956/nexus/content/repositories/releases/</url>
+        </repository>
+        <snapshotRepository>
+            <id>myNexus</id>
+            <url>http://dev.federmann.co.at:37956/nexus/content/repositories/snapshots/</url>
+        </snapshotRepository>
+    </distributionManagement>
+    <scm>
+        <connection>scm:git:https://github.com/georgfedermann/DocFamilySymbolTables.git</connection>
+        <url>https://github.com/georgfedermann/DocFamilySymbolTables</url>
+      <tag>HEAD</tag>
+  </scm>
     <developers>
         <developer>
             <id>georg.federmann</id>
