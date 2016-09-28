@@ -1,9 +1,7 @@
 package org.poormanscastle.products.hit2assext.domain;
 
-import org.apache.commons.lang3.StringUtils;
-import org.apache.log4j.Logger;
-import org.joda.time.DateTime;
-import org.joda.time.Duration;
+import static com.google.common.base.Preconditions.checkArgument;
+import static com.google.common.base.Preconditions.checkState;
 
 import java.util.HashMap;
 import java.util.LinkedList;
@@ -11,8 +9,10 @@ import java.util.List;
 import java.util.Map;
 import java.util.UUID;
 
-import static com.google.common.base.Preconditions.checkArgument;
-import static com.google.common.base.Preconditions.checkState;
+import org.apache.commons.lang3.StringUtils;
+import org.apache.log4j.Logger;
+import org.joda.time.DateTime;
+import org.joda.time.Duration;
 
 class RenderSessionContextImpl implements RenderSessionContext {
 
@@ -119,7 +119,11 @@ class RenderSessionContextImpl implements RenderSessionContext {
         checkArgument(!StringUtils.isBlank(targetListName), "targetListName cannot be empty or null!");
         List sourceList = listMap.get(sourceListName);
         List targetList = listMap.get(targetListName);
-        checkState(sourceList != null, StringUtils.join("No source list for name ", sourceListName, " can be found!"));
+        if (sourceList == null) {
+            logger.warn(StringUtils.join("No source list for name ", sourceListName,
+                    " can be found! No elements will be added to ", targetListName, "."));
+            return;
+        }
         checkState(targetList != null, StringUtils.join("No target list for name ", targetListName, " can be found!"));
         for (Object item : sourceList) {
             targetList.add(item);
