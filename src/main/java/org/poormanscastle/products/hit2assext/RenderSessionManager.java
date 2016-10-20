@@ -288,4 +288,31 @@ public final class RenderSessionManager {
         return System.getProperty(systemPropertyName);
     }
 
+    /**
+     * accepts date in the format T.M.JJJJ and converts it to ISO8601, e.b. 2016-10-20.
+     * This format yields the advantage that it is supported by XPath date functions.
+     * The hard-to-read method name shall support readability.
+     *
+     * @param dateString a string conveying a date in the format T.M.JJJJ. This means the date
+     *                   contains 3 value separated by "." dots where the first item represents
+     *                   a day in month, the second a month, the third a year. In fact it does
+     *                   not matter how many digits each data item has, as long as they are
+     *                   numeric values and meaningful in the context of dates. Month counting is
+     *                   1-based, i.d. January is represented by the 1, February by 2, and so
+     *                   on through to December represented by 16.
+     * @return a String representing the same date as the input string in the ISO8601 format.
+     */
+    public static String convert_TMJJJJ_DateToIso8601Format(String dateString) {
+        StringBuilder result = new StringBuilder();
+        String[] dateItems = dateString.split("\\.");
+        checkArgument(dateItems.length == 3, StringUtils.join("Invalid dateString ", dateString,
+                " - it should be in the format T.M.JJJJ"));
+        boolean flag = false;
+        for (int counter = 0; counter < 3; counter++) {
+            result.append(StringUtils.join(flag ? "-" : "", StringUtils.leftPad(dateItems[2 - counter], 2, "0")));
+            flag = true;
+        }
+        return result.toString();
+    }
+
 }

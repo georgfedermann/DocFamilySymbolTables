@@ -10,6 +10,11 @@ import org.junit.rules.ExpectedException;
  * Created by georg on 8/10/16.
  */
 public class RenderSessionManagerTest {
+    @Test
+    public void convert_TMJJJJ_DateToIso8601Format() throws Exception {
+        assertEquals("2016-10-20", RenderSessionManager.convert_TMJJJJ_DateToIso8601Format("20.10.2016"));
+        assertEquals("2016-01-02", RenderSessionManager.convert_TMJJJJ_DateToIso8601Format("2.1.2016"));
+    }
 
     @Rule
     public final ExpectedException exception = ExpectedException.none();
@@ -27,9 +32,9 @@ public class RenderSessionManagerTest {
         exception.expect(IllegalArgumentException.class);
         RenderSessionManager.getSubstring(testString, 0, 4);
     }
-    
+
     @Test
-    public void getSubStringStartIndexGreaterThanEndIndex() throws Exception{
+    public void getSubStringStartIndexGreaterThanEndIndex() throws Exception {
         String testString = "Hello, World!";
         exception.expect(IllegalArgumentException.class);
         RenderSessionManager.getSubstring(testString, 5, 1);
@@ -63,5 +68,6 @@ public class RenderSessionManagerTest {
     public void testConfiguration() throws Exception {
         assertEquals("Hello, World!", RenderSessionManager.testConfiguration());
     }
+
 
 }
