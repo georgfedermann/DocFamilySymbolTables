@@ -68,6 +68,5 @@ public class RenderSessionManagerTest {
     public void testConfiguration() throws Exception {
         assertEquals("Hello, World!", RenderSessionManager.testConfiguration());
     }
-
-
+    
 }

@@ -57,8 +57,10 @@ public final class RenderSessionManager {
     }
 
     /**
-     * This method can be used to test the configuration.
-     * It returns the text "Hello, World!".
+     * This method can be used to test the configuration of the RenderSession within DocFamily.
+     * The method can be called within a DocDesign "Dynamic Content" element. If the Dynamic Content element
+     * embeds the String "Hello, World!" within the rendered document, one can well assume that the configuration
+     * within DocFamily was successful.
      *
      * @return the string "Hello, World!" without the quotes.
      */
@@ -208,14 +210,56 @@ public final class RenderSessionManager {
         RenderSessionManager.setScalarVariableValue(renderSessionContextUuid, variableName, value);
     }
 
+    /**
+     * This method implements support for the HIT/CLOU customer specific notion of converting lists into scalar
+     * variables. Example: Given a list "list" with n elements, the customer wants - for what reasons ever - to access
+     * the list elements by using scalar variables listelement#, where listelement1 hast the value of list[1],
+     * listelement2 hast the value of list[2]. To this end, the customer wrote a ClOU module which generates a sort
+     * of MACRO dynamically:
+     * <p></p>
+     * #$ element
+     * <p></p>
+     * where element holds the dynamically created value, e.g.
+     * <p></p>
+     * #= listelem1 list[listind]
+     * <p></p>
+     * where listind is an IdVariable obiously holding the same value as the number value in the variable name listelem1.
+     * The command to be executed is expected to be found in a render session variable called element.
+     *
+     * @param renderSessionContextUuid
+     */
+    public static void convertListElementsToVars(String renderSessionContextUuid) {
+        String command = (String) getScalarVariableValue(renderSessionContextUuid, "element");
+        // command should be something like: #= listelem1 list[listind]
+        //int index = Integer.parseInt(command.substring(11, 12));
+        Object indexObject = getScalarVariableValue(renderSessionContextUuid, "zähler");
+        int index = 0;
+        if (indexObject instanceof Long){
+            index = ((Long)indexObject).intValue();
+        } else if (indexObject instanceof Double){
+            index = ((Double)indexObject).intValue();
+        } else {
+            throw new IllegalStateException(StringUtils.join("indexObject should be Long or Double, but it was ", indexObject.getClass().getName()));
+        }
+        int listIndex = ((Double) getScalarVariableValue(renderSessionContextUuid, "listind")).intValue();
+        int posBracket = command.indexOf("[");
+        String listName = command.substring(13, posBracket);
+        String varName = StringUtils.join("listelem", index);
+        logger.info(StringUtils.join("ConvertListElementsToVars is retrieving the value ", listName, "[", index,
+                "] and going to write it to ", varName, "."));
+        Object value = getListValueAt(renderSessionContextUuid, listName, listIndex);
+        setScalarVariableValue(renderSessionContextUuid, varName, value);
+    }
+
     public static void setScalarVariableValue(String renderSessionContextUuid, String variableName, Object value) {
         if (logger.isInfoEnabled()) {
             logger.info(StringUtils.join("Received call: setScalarVariableValue(", renderSessionContextUuid, ", ", variableName, ", ", value, ")"));
         }
-        // check that arguement is not an empty list
+        // check that argument is not an empty list
         if (value instanceof List && ((List) value).size() == 0) {
             throw new IllegalArgumentException(StringUtils.join("hit2assext:ERROR setScalarVariable('", renderSessionContextUuid, "', '",
-                    variableName, "', value) received empty List. Maybe the line with the given number is missing in the user data XML? "));
+                    variableName, "', value) received empty List. Maybe the line with the given number is missing in the user data XML? Current XML sequence value is ",
+                    getXmlSequence(renderSessionContextUuid), "."));
         }
         try {
             if (value instanceof List && ((List) value).get(0) instanceof NodeInfo) {

@@ -80,6 +80,8 @@ class RenderSessionContextImpl implements RenderSessionContext {
 
     @Override
     public Object getListValueAt(String listName, int index) {
+        checkArgument(!StringUtils.isBlank(listName), "listName is null, empty or consists of whitespace only.");
+        listName = listName.trim();
         List<?> list = listMap.get(listName);
         if (list == null) {
             logger.error(StringUtils.join("The given listName ", listName, " has not been initialized. Please use method RenderSessionManager.createList(String renderSessionContextUuid, String listName) to create the list before referencing it."));
