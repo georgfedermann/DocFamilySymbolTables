@@ -234,10 +234,10 @@ public final class RenderSessionManager {
         //int index = Integer.parseInt(command.substring(11, 12));
         Object indexObject = getScalarVariableValue(renderSessionContextUuid, "zähler");
         int index = 0;
-        if (indexObject instanceof Long){
-            index = ((Long)indexObject).intValue();
-        } else if (indexObject instanceof Double){
-            index = ((Double)indexObject).intValue();
+        if (indexObject instanceof Long) {
+            index = ((Long) indexObject).intValue();
+        } else if (indexObject instanceof Double) {
+            index = ((Double) indexObject).intValue();
         } else {
             throw new IllegalStateException(StringUtils.join("indexObject should be Long or Double, but it was ", indexObject.getClass().getName()));
         }
@@ -347,6 +347,9 @@ public final class RenderSessionManager {
      * @return a String representing the same date as the input string in the ISO8601 format.
      */
     public static String convert_TMJJJJ_DateToIso8601Format(String dateString) {
+        if (logger.isInfoEnabled()) {
+            logger.info(StringUtils.join("Received Call convert_TMJJJJ_DateToIso8601Format('", dateString, "')"));
+        }
         StringBuilder result = new StringBuilder();
         String[] dateItems = dateString.split("\\.");
         checkArgument(dateItems.length == 3, StringUtils.join("Invalid dateString ", dateString,
